@@ -7,8 +7,23 @@
 			perror("Erreur de socket()");
 			exit(1);
 		}
-		//getAdresseInfo
-		//bind
+		struct addrinfo hints;
+		struct addrinfo *results;
+		memset(&hints,0,sizeof(struct addrinfo));
+		hints.ai_family = AF_INET;
+		hints.ai_socktype = SOCK_STREAM;
+		hints.ai_flags = AI_PASSIVE | AI_NUMERICSERV; // pour une connexion passive
+		if (getaddrinfo(NULL,"50000",&hints,&results) != 0)
+		{
+				close(s);
+				exit(1);
+		}
+		if (bind(s,results->ai_addr,results->ai_addrlen) < 0)
+		{
+				perror("Erreur de bind()");
+				exit(1);
+		}
+		freeaddrinfo(results);
 		return s;
 
 	}
