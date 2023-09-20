@@ -4,9 +4,9 @@ CC = g++ -Wall -m64 -g
 all:	Client CreationBD Serveur
 
 
-Client:	mainclient.o windowclient.o moc_windowclient.o
+Client:	mainclient.o windowclient.o moc_windowclient.o Tcp.c
 		echo creation de ClientQt
-		g++ -Wno-unused-parameter -o Client mainclient.o windowclient.o moc_windowclient.o /usr/lib64/libQt5Widgets.so /usr/lib64/libQt5Gui.so /usr/lib64/libQt5Core.so /usr/lib64/libGL.so -lpthread
+		g++ -Wno-unused-parameter -o Client mainclient.o windowclient.o moc_windowclient.o Tcp.c /usr/lib64/libQt5Widgets.so /usr/lib64/libQt5Gui.so /usr/lib64/libQt5Core.so /usr/lib64/libGL.so -lpthread
 
 mainclient.o :	mainclient.cpp
 		echo creation de mainclient..
