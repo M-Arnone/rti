@@ -12,21 +12,12 @@
 #include <netdb.h>
 #include <cstring>
 
+int ServerSocket(int port);
+int Accept(int sEcoute,char *ipClient);
+int ClientSocket(char* ipServeur,int portServeur);
+int Send(int sSocket,char* data,int taille);
+int Receive(int sSocket,char* data);
 
-
-
-
-
-class Tcp{
-private:
-public:
-	int ServerSocket(int port);
-	int Accept(int sEcoute,char *ipClient);
-	int ClientSocket(char* ipServeur,int portServeur);
-	int Send(int sSocket,char* data,int taille);
-	int Receive(int sSocket,char* data);
-
-};
 
 
 
