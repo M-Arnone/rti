@@ -7,13 +7,13 @@
 		char port[NI_MAXSERV];
 		sprintf(port, "%d", port2);
 
-		int s;
-		if ((s = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+		int sServeur;
+		if ((sServeur = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 		{
 			perror("Erreur de socket()");
 			exit(1);
 		}
-		printf("socket creee = %d\n",s);
+		printf("socket creee = %d\n",sServeur);
 
 
 		struct addrinfo hints;
@@ -24,19 +24,19 @@
 		hints.ai_flags = AI_PASSIVE | AI_NUMERICSERV; // pour une connexion passive
 		if (getaddrinfo(NULL,port,&hints,&results) != 0)
 		{
-				close(s);
+				close(sServeur);
 				exit(1);
 		}
 		getnameinfo(results->ai_addr,results->ai_addrlen,host,NI_MAXHOST,port,NI_MAXSERV,NI_NUMERICSERV | NI_NUMERICHOST);
 		printf("Mon Adresse IP: %s -- Mon Port: %s\n",host,port);
 
-		if (bind(s,results->ai_addr,results->ai_addrlen) < 0)
+		if (bind(sServeur,results->ai_addr,results->ai_addrlen) < 0)
 		{
 				perror("Erreur de bind()");
 				exit(1);
 		}
 		freeaddrinfo(results);
-		return s;
+		return sServeur;
 
 	}
 	int Accept(int sEcoute,char *ipClient)
@@ -58,7 +58,7 @@
 				perror("Erreur de accept()");
 				exit(1);
 		}
-		printf("accept() reussi !");
+		printf("accept() reussi !\n");
 		printf("socket de service = %d\n",sService);
 
 		// Recuperation d'information sur le client connecte
@@ -68,12 +68,11 @@
 		getnameinfo((struct sockaddr*)&adrClient,adrClientLen,host,NI_MAXHOST,port,NI_MAXSERV,NI_NUMERICSERV | NI_NUMERICHOST);
 		printf("Client connecte --> Adresse IP: %s -- Port: %s\n",host,port);
 		
-		return sEcoute;
+		return sService;
 
 	}
 	int ClientSocket(char* ipServeur,int portServeur)
 	{
-		//socket, getaddrinfo, connect
 		int sClient;
 		printf("pid = %d\n",getpid());
 		// Creation de la socket
@@ -90,10 +89,8 @@
 		hints.ai_family = AF_INET;
 		hints.ai_socktype = SOCK_STREAM;
 		hints.ai_flags = AI_NUMERICSERV;
-		printf("avant getaddr\n");
-		if (getaddrinfo(NULL,"1234",&hints,&results) != 0)
+		if (getaddrinfo(ipServeur,"1234",&hints,&results) != 0)
 			exit(1);
-		printf("apres getaddr\n");
 		// Demande de connexion
 		if (connect(sClient,results->ai_addr,results->ai_addrlen) == -1)
 		{
@@ -102,13 +99,35 @@
 		}
 		printf("connect() reussi !\n");
 
-		return portServeur;
+		return sClient;
 	}
 	int Send(int sSocket,char* data,int taille)
 	{
-		return sSocket;
+		int nbEcrits = send(sSocket, data, taille, 0);
+		if (nbEcrits < 0)
+		{
+        	perror("Erreur de Send");
+        	close(sSocket);
+        	exit(1);
+    	}
+	    printf("NbEcrits = %d\n", nbEcrits);
+	    printf("Ecrit = --%s--\n", data);
+        printf("-----TCP-----\n");
+	    return nbEcrits;
 	}
 	int Receive(int sSocket,char* data)
 	{
-		return sSocket;
+		char buffer[100];
+		int nbLus = recv(sSocket, buffer, sizeof(buffer), 0);
+		if (nbLus < 0)
+		{
+			perror("Erreur de Receive");
+			close(sSocket);
+			exit(1);
+    	}
+    	printf("NbLus = %d\n", nbLus);
+    	buffer[nbLus] = 0;
+    	strcpy(data, buffer);
+    	printf("Lu = --%s--\n", data);
+    	return nbLus;
 	}
