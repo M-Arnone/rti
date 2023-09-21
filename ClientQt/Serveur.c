@@ -2,9 +2,7 @@
 
 int main(){
 
-	int b;
-	int a = 1234;
-	b = ServerSocket(a);
-	Accept(b,NULL);
+	int sServeur = ServerSocket(1234);
+	int sService = Accept(sServeur,NULL);
 	return 0;
 }

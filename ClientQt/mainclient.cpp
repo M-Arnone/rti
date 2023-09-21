@@ -11,6 +11,6 @@ int main(int argc, char *argv[])
     w = new WindowClient();
     w->show();
     return a.exec();*/
-    ClientSocket(NULL,1234);
+    ClientSocket(NULL,5678);
     return 0;
 }
