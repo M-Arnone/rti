@@ -20,5 +20,8 @@ int main(){
 	buffer[nbLus] = 0;
 	printf("Lu= --%s--\n",buffer);
 
+	close(sServer);
+	close(sService);
+
 	return 0;
 }
