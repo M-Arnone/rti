@@ -29,7 +29,12 @@
 		}
 		getnameinfo(results->ai_addr,results->ai_addrlen,host,NI_MAXHOST,port,NI_MAXSERV,NI_NUMERICSERV | NI_NUMERICHOST);
 		printf("Mon Adresse IP: %s -- Mon Port: %s\n",host,port);
-
+		//permet de faire des options de socket
+		//L’option SO_REUSEADDR permet notamment de relancer immédiatement un serveur
+		//TCP qu’on vient d’arrêter et dont la socket se trouve par exemple dans l’état TIME_WAIT.
+		int value = 1;
+		setsockopt(sServeur,SOL_SOCKET,SO_REUSEADDR,&value,sizeof(int));
+		//Liaison de socket a l'adresse ip
 		if (bind(sServeur,results->ai_addr,results->ai_addrlen) < 0)
 		{
 				perror("Erreur de bind()");
@@ -41,9 +46,7 @@
 	}
 	int Accept(int sEcoute,char *ipClient)
 	{
-		char host[NI_MAXHOST];
-		char port[NI_MAXSERV];
-		sprintf(port, "%d", sEcoute);
+		
 		if (listen(sEcoute,SOMAXCONN) == -1)
 		{
 			perror("Erreur de listen()");
@@ -64,6 +67,10 @@
 		// Recuperation d'information sur le client connecte
 		struct sockaddr_in adrClient;
 		socklen_t adrClientLen;
+		char host[NI_MAXHOST];
+		char port[NI_MAXSERV];	
+		sprintf(port, "%d", sEcoute);
+
 		getpeername(sService,(struct sockaddr*)&adrClient,&adrClientLen);
 		getnameinfo((struct sockaddr*)&adrClient,adrClientLen,host,NI_MAXHOST,port,NI_MAXSERV,NI_NUMERICSERV | NI_NUMERICHOST);
 		printf("Client connecte --> Adresse IP: %s -- Port: %s\n",host,port);
@@ -103,31 +110,44 @@
 	}
 	int Send(int sSocket,char* data,int taille)
 	{
-		int nbEcrits = send(sSocket, data, taille, 0);
-		if (nbEcrits < 0)
-		{
-        	perror("Erreur de Send");
-        	close(sSocket);
-        	exit(1);
-    	}
-	    printf("NbEcrits = %d\n", nbEcrits);
-	    printf("Ecrit = --%s--\n", data);
-        printf("-----TCP-----\n");
-	    return nbEcrits;
+		if (taille > TAILLE_MAX_DATA)
+			return -1;
+		// Preparation de la charge utile
+		char trame[TAILLE_MAX_DATA+2];
+		memcpy(trame,data,taille);
+		trame[taille] = '#';
+		trame[taille+1] = ')';
+		// Ecriture sur la socket
+		return write(sSocket,trame,taille+2)-2;	
 	}
 	int Receive(int sSocket,char* data)
 	{
-		char buffer[100];
-		int nbLus = recv(sSocket, buffer, sizeof(buffer), 0);
-		if (nbLus < 0)
+		bool fini = false;
+		int nbLus, i = 0;
+		char lu1,lu2;
+		while(!fini)
 		{
-			perror("Erreur de Receive");
-			close(sSocket);
-			exit(1);
-    	}
-    	printf("NbLus = %d\n", nbLus);
-    	buffer[nbLus] = 0;
-    	strcpy(data, buffer);
-    	printf("Lu = --%s--\n", data);
-    	return nbLus;
+			if ((nbLus = read(sSocket,&lu1,1)) == -1) return -1;
+			if (nbLus == 0) return i;
+			// connexion fermee par client
+			if (lu1 == '#')
+			{
+				if ((nbLus = read(sSocket,&lu2,1)) == -1) return -1;
+				if (nbLus == 0) return i;
+				// connexion fermee par client
+				if (lu2 == ')') fini = true;
+				else
+				{
+					data[i] = lu1;
+					data[i+1] = lu2;
+					i += 2;
+				}
+			}
+			else
+			{
+				data[i] = lu1;
+				i++;
+			}
+		}
+		return i;
 	}
