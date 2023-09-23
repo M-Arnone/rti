@@ -66,11 +66,10 @@
 
 		// Recuperation d'information sur le client connecte
 		struct sockaddr_in adrClient;
-		socklen_t adrClientLen;
+		socklen_t adrClientLen = sizeof(struct sockaddr_in);
 		char host[NI_MAXHOST];
 		char port[NI_MAXSERV];	
 		sprintf(port, "%d", sEcoute);
-
 		getpeername(sService,(struct sockaddr*)&adrClient,&adrClientLen);
 		getnameinfo((struct sockaddr*)&adrClient,adrClientLen,host,NI_MAXHOST,port,NI_MAXSERV,NI_NUMERICSERV | NI_NUMERICHOST);
 		printf("Client connecte --> Adresse IP: %s -- Port: %s\n",host,port);
