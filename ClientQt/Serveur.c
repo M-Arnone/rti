@@ -1,4 +1,5 @@
 #include "Tcp.h"
+#include "SMOP.h"
 
 int sService;
 int sEcoute;

@@ -13,6 +13,7 @@
 #include <cstring>
 #include <stdbool.h> 
 #include <signal.h>
+
 int ServerSocket(int port);
 int Accept(int sEcoute,char *ipClient);
 int ClientSocket(char* ipServeur,int portServeur);

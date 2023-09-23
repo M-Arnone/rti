@@ -25,7 +25,7 @@ CreationBD:	CreationBD.cpp
 			g++ -o CreationBD CreationBD.cpp -I/usr/include/mysql -m64 -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
 
 
-Serveur:	Serveur.c Tcp.c
+Serveur:	Serveur.c Tcp.c SMOP.cpp
 			echo compilation de Serveur..
 			g++ -Wall -std=c++11 Serveur.c Tcp.c -o Serveur
 
@@ -33,6 +33,9 @@ Tcp.o:	Tcp.c
 		echo compilation des librairies de sockets...
 		gcc  -Wall -g Tcp.c -o Tcp.o
 
+SMOP.o:	SMOP.cpp
+		echo creation du protocole
+		g++  -Wall -std=c++11 SMOP.cpp -o SMOP.o
 
 clean:
 			rm *.o -f
