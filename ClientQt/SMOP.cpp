@@ -20,13 +20,15 @@ pthread_mutex_t mutexClients = PTHREAD_MUTEX_INITIALIZER;
 bool SMOP(char* requete, char* reponse,int socket)
 {
     // ***** Récupération nom de la requete *****************
-    char *ptr = strtok(requete,"#");
+    char *context = NULL;
+    char *ptr = strtok_s(requete,"#",&context);
     // ***** LOGIN ******************************************
     if (strcmp(ptr,"LOGIN") == 0){
 
         char user[50], password[50];
-        strcpy(user,strtok(NULL,"#"));
-        strcpy(password,strtok(NULL,"#"));
+        
+        strcpy(user,strtok_s(NULL,"#",&context));
+        strcpy(password,strtok_s(NULL,"#",&context));
         printf("\t[THREAD %p] LOGIN de %s\n",pthread_self(),user);
 
         if (estPresent(socket) >= 0){ // client déjà loggé
@@ -59,10 +61,10 @@ bool SMOP(char* requete, char* reponse,int socket)
     {
         char op;
         int a,b;
-        ptr = strtok(NULL,"#");
+        ptr = strtok_s(NULL,"#",&context);
         op = ptr[0];
-        a = atoi(strtok(NULL,"#"));
-        b = atoi(strtok(NULL,"#"));
+        a = atoi(strtok_s(NULL,"#",&context));
+        b = atoi(strtok(NULL,"#",&context));
         printf("\t[THREAD %p] OPERATION %d %c %d\n",pthread_self(),a,op,b);
         if (estPresent(socket) == -1) sprintf(reponse,"OPER#ko#Client non loggé!");
         else
