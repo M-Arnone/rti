@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     
     char requete[200],reponse[200];
     int nbEcrits, nbLus;
-    
+
     while(1)
     {
         printf("Requete a envoyer (<CTRL-C> four fin) : ");
@@ -56,7 +56,9 @@ int main(int argc, char *argv[])
         reponse[nbLus] = 0;
         printf("Reponse recue = %s\n",reponse);
     }
-   }
+    return 0;
+}
+
 void HandlerSIGINT(int s)
 {
     printf("\nArret du client.\n");

@@ -20,16 +20,16 @@ pthread_mutex_t mutexClients = PTHREAD_MUTEX_INITIALIZER;
 bool SMOP(char* requete, char* reponse,int socket)
 {
     // ***** Récupération nom de la requete *****************
-    char *context = NULL;
-    char *ptr = strtok_s(requete,"#",&context);
+
+    char *ptr = strtok(requete,"#");
     // ***** LOGIN ******************************************
     if (strcmp(ptr,"LOGIN") == 0){
 
         char user[50], password[50];
         
-        strcpy(user,strtok_s(NULL,"#",&context));
-        strcpy(password,strtok_s(NULL,"#",&context));
-        printf("\t[THREAD %p] LOGIN de %s\n",pthread_self(),user);
+        strcpy(user,strtok(NULL,"#"));
+        strcpy(password,strtok(NULL,"#"));
+        printf("\t[THREAD %p] LOGIN de %s\n",(void*)pthread_self(),user);
 
         if (estPresent(socket) >= 0){ // client déjà loggé
             sprintf(reponse,"LOGIN#ko#Client déjà loggé !");
@@ -50,7 +50,7 @@ bool SMOP(char* requete, char* reponse,int socket)
     // ***** LOGOUT *****************************************
     if (strcmp(ptr,"LOGOUT") == 0)
     {
-        printf("\t[THREAD %p] LOGOUT\n",pthread_self());
+        printf("\t[THREAD %p] LOGOUT\n",(void*)pthread_self());
         retire(socket);
         sprintf(reponse,"LOGOUT#ok");
         return false;
@@ -61,11 +61,11 @@ bool SMOP(char* requete, char* reponse,int socket)
     {
         char op;
         int a,b;
-        ptr = strtok_s(NULL,"#",&context);
+        ptr = strtok(NULL,"#");
         op = ptr[0];
-        a = atoi(strtok_s(NULL,"#",&context));
-        b = atoi(strtok(NULL,"#",&context));
-        printf("\t[THREAD %p] OPERATION %d %c %d\n",pthread_self(),a,op,b);
+        a = atoi(strtok(NULL,"#"));
+        b = atoi(strtok(NULL,"#"));
+        printf("\t[THREAD %p] OPERATION %d %c %d\n",(void*)pthread_self(),a,op,b);
         if (estPresent(socket) == -1) sprintf(reponse,"OPER#ko#Client non loggé!");
         else
         {
@@ -76,8 +76,8 @@ bool SMOP(char* requete, char* reponse,int socket)
             }
             catch(int) { sprintf(reponse,"OPER#ko#Division par zéro !"); }
         }
-        return true;
     }
+    return true;
 }
 
 //***** Traitement des requetes *************************************
