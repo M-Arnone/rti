@@ -32,6 +32,10 @@ int main(int argc, char *argv[])
     }
 
     //Connexion au serveur
+    //ici le premier argument (ipServeur) est a NULL donc
+    // donc nous sommes en local mais si on veut connecter deux
+    // machines distantes on doit rentrer l'ip 
+    //char ip[NI_MAXHOST] = "";
     sClient = ClientSocket(NULL,5678);
     printf("Connecte sur le serveur.\n");
 
