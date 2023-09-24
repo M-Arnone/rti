@@ -73,7 +73,7 @@
 		getpeername(sService,(struct sockaddr*)&adrClient,&adrClientLen);
 		getnameinfo((struct sockaddr*)&adrClient,adrClientLen,host,NI_MAXHOST,port,NI_MAXSERV,NI_NUMERICSERV | NI_NUMERICHOST);
 		printf("Client connecte --> Adresse IP: %s -- Port: %s\n",host,port);
-		
+		strcpy(ipClient,host);
 		return sService;
 
 	}
