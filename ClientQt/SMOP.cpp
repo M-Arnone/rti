@@ -6,14 +6,13 @@
 #include <pthread.h>
 #include <stdbool.h>
 #include <sys/socket.h>
+
 //***** Etat du protocole : liste des clients loggés ****************
 int clients[NB_MAX_CLIENTS];
 int nbClients = 0;
-
 int estPresent(int socket);
 void ajoute(int socket);
 void retire(int socket);
-
 pthread_mutex_t mutexClients = PTHREAD_MUTEX_INITIALIZER;
 
 //***** Parsing de la requete et creation de la reponse *************
