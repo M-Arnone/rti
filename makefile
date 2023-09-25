@@ -1,48 +1,40 @@
 .SILENT:
 CC = g++ -Wall -m64 -g
 
-all:	Client CreationBD Serveur
+all:	CreationBD Serveur Client
 
+Client: Client/mainclient.o Client/windowclient.o Client/moc_windowclient.o Serveur/Tcp.o
+	echo création de Client
+	g++ -Wno-unused-parameter -o c Client/mainclient.o Client/windowclient.o Client/moc_windowclient.o Serveur/Tcp.o /usr/lib64/libQt5Widgets.so /usr/lib64/libQt5Gui.so /usr/lib64/libQt5Core.so /usr/lib64/libGL.so -lpthread
 
-Client:	mainclient.o windowclient.o moc_windowclient.o Tcp.o
-		echo creation de ClientQt
-		g++ -Wno-unused-parameter -o Client mainclient.o windowclient.o moc_windowclient.o Tcp.cpp /usr/lib64/libQt5Widgets.so /usr/lib64/libQt5Gui.so /usr/lib64/libQt5Core.so /usr/lib64/libGL.so -lpthread
+Client/mainclient.o : Client/mainclient.cpp
+	echo création de mainclient..
+	g++ -Wno-unused-parameter -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I./UNIX_DOSSIER_FINAL -I./Client -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I./Client -I./Client -I/usr/lib64/qt5/mkspecs/linux-g++ -o Client/mainclient.o Client/mainclient.cpp
 
-mainclient.o :	mainclient.cpp
-		echo creation de mainclient..
-		g++ -Wno-unused-parameter -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I../UNIX_DOSSIER_FINAL -I. -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I. -I. -I/usr/lib64/qt5/mkspecs/linux-g++ -o mainclient.o mainclient.cpp
+Client/windowclient.o : Client/windowclient.cpp
+	echo création de windowclient..
+	g++ -Wno-unused-parameter -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I./UNIX_DOSSIER_FINAL -I./Client -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I./Client -I./Client -I/usr/lib64/qt5/mkspecs/linux-g++ -o Client/windowclient.o Client/windowclient.cpp
 
-windowclient.o :	windowclient.cpp
-		echo creaiton de windowclient..
-		g++ -Wno-unused-parameter -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I../UNIX_DOSSIER_FINAL -I. -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I. -I. -I/usr/lib64/qt5/mkspecs/linux-g++ -o windowclient.o windowclient.cpp
+Client/moc_windowclient.o : Client/moc_windowclient.cpp
+	echo création de moc_windowclient...
+	g++ -Wno-unused-parameter -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I./UNIX_DOSSIER_FINAL -I./Client -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I./Client -I./Client -I/usr/lib64/qt5/mkspecs/linux-g++ -o Client/moc_windowclient.o Client/moc_windowclient.cpp
 
-moc_windowclient.o :	moc_windowclient.cpp
-		echo creation de moc_windowclient...
-		g++ -Wno-unused-parameter -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I../UNIX_DOSSIER_FINAL -I. -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I. -I. -I/usr/lib64/qt5/mkspecs/linux-g++ -o moc_windowclient.o moc_windowclient.cpp
+CreationBD: BD/CreationBD.cpp
+	echo création de la BD
+	g++ -o CreationBD BD/CreationBD.cpp -I/usr/include/mysql -m64 -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
 
-CreationBD:	BD/CreationBD.cpp
-			echo creation de la BD
-			g++ -o CreationBD BD/CreationBD.cpp -I/usr/include/mysql -m64 -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
+Serveur:	Serveur/Serveur.cpp Serveur/Tcp.o Serveur/OVESP.o
+	echo compilation de Serveur..
+	g++ -Wall -std=c++11 Serveur/Serveur.cpp Serveur/Tcp.o Serveur/OVESP.o -pthread -o s
 
+Serveur/Tcp.o: Serveur/Tcp.cpp
+	echo compilation des librairies de sockets...
+	g++ -Wno-unused-parameter -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I./UNIX_DOSSIER_FINAL -I./Tcp -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I./Tcp -I./Tcp -I/usr/lib64/qt5/mkspecs/linux-g++ -o Serveur/Tcp.o Serveur/Tcp.cpp
 
-Serveur:	Serveur.cpp Tcp.o OVESP.o
-		echo compilation de Serveur..
-		g++ -Wall -std=c++11 Serveur.cpp Tcp.o OVESP.o -pthread -o Serveur
-
-
-Tcp.o:	Tcp.cpp
-		echo compilation des librairies de sockets...
-		g++ -Wno-unused-parameter -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I../UNIX_DOSSIER_FINAL -I. -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I. -I. -I/usr/lib64/qt5/mkspecs/linux-g++ -o Tcp.o Tcp.cpp
-
-
-OVESP.o:	OVESP.cpp
-		echo creation du protocole...
-		g++ -Wall -std=c++11 -c OVESP.cpp -o OVESP.o
-
+Serveur/OVESP.o: Serveur/OVESP.cpp
+	echo création du protocole...
+	g++ -Wall -std=c++11 -c Serveur/OVESP.cpp -o Serveur/OVESP.o
 
 clean:
-			rm *.o -f
-			rm Client -f
-			rm CreationBD -f
-			rm Serveur -f
+	rm -f Serveur/*.o Client/*.o c CreationBD s
 

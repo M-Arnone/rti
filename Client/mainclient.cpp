@@ -1,5 +1,5 @@
 #include "windowclient.h"
-#include "Tcp.h"
+#include "../Serveur/Tcp.h"
 
 #include <QApplication>
 
