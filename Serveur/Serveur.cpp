@@ -1,12 +1,26 @@
 #include "Tcp.h"
 #include "OVESP.h"
 
+
 void HandlerSIGINT(int s);
 void TraitementConnexion(int sService);
 void* FctThreadClient(void* p);
 int sEcoute;
+// Gestion du pool de threads
+#define NB_THREADS_POOL 2
+#define TAILLE_FILE_ATTENTE 20
+int socketsAcceptees[TAILLE_FILE_ATTENTE];
+int indiceEcriture=0, indiceLecture=0;
+pthread_mutex_t mutexSocketsAcceptees;
+pthread_cond_t condSocketsAcceptees;
+
 
 int main(){
+	// Initialisation socketsAcceptees
+	pthread_mutex_init(&mutexSocketsAcceptees,NULL);
+	pthread_cond_init(&condSocketsAcceptees,NULL);
+	for (int i=0 ; i<TAILLE_FILE_ATTENTE ; i++)
+		socketsAcceptees[i] = -1;
 
 	// Armement des signaux
 	struct sigaction A;
@@ -14,48 +28,74 @@ int main(){
 	sigemptyset(&A.sa_mask);
 	A.sa_handler = HandlerSIGINT;
 	if (sigaction(SIGINT,&A,NULL) == -1){
-		perror("Erreur de sigaction");
-		exit(1);
+			perror("Erreur de sigaction");
+			exit(1);
 	}
-	
+
 	// Creation de la socket d'écoute
-	if ((sEcoute = ServerSocket(1234)) == -1)
-	{
-		perror("Erreur de ServeurSocket");
-		exit(1);
+	if ((sEcoute = ServerSocket(1234))== -1){
+			perror("Erreur de ServeurSocket");
+			exit(1);
 	}
+
+	// Creation du pool de threads
+	printf("Création du pool de threads.\n");
+	pthread_t th;
+	for (int i=0 ; i<NB_THREADS_POOL ; i++)
+		pthread_create(&th,NULL,FctThreadClient,NULL);
+
+
 
 	// Mise en boucle du serveur
 	int sService;
-	pthread_t th;
 	char ipClient[50];
 	printf("Demarrage du serveur.\n");
 	while(1)
 	{
 		printf("Attente d'une connexion...\n");
-		if ((sService = Accept(sEcoute,ipClient)) == -1)
-		{
-			perror("Erreur de Accept");
-			close(sEcoute);
-			SMOP_Close();
-			exit(1);
+		if ((sService = Accept(sEcoute,ipClient)) == -1){
+				perror("Erreur de Accept");
+				close(sEcoute);
+				SMOP_Close();
+				exit(1);
 		}
 		printf("Connexion acceptée : IP=%s socket=%d\n",ipClient,sService);
-		// Creation d'un thread "client" s'occupant du client connecté
-		int *p = (int*)malloc(sizeof(int));
-		*p = sService;
-		pthread_create(&th,NULL,FctThreadClient,(void*)p);
-	}
+
+		// Insertion en liste d'attente et réveil d'un thread du pool
+		// (Production d'une tâche)
+		pthread_mutex_lock(&mutexSocketsAcceptees);
+		socketsAcceptees[indiceEcriture] = sService; // !!!
+		indiceEcriture++;
+		if (indiceEcriture == TAILLE_FILE_ATTENTE) indiceEcriture = 0;
+		pthread_mutex_unlock(&mutexSocketsAcceptees);
+		pthread_cond_signal(&condSocketsAcceptees);
+}
 }
 
 
 void* FctThreadClient(void* p)
 {
-	int sService = *((int*)p);
-	free(p);
-	printf("\t[THREAD %p] Je m'occupe de la socket%d\n",(void *)pthread_self(),sService);
-	TraitementConnexion(sService);
-	pthread_exit(NULL);
+	int sService;
+	while(1)
+	{
+		printf("\t[THREAD %p] Attente socket...\n",(void*)pthread_self());
+		
+		// Attente d'une tâche
+		pthread_mutex_lock(&mutexSocketsAcceptees);
+		while (indiceEcriture == indiceLecture)
+			pthread_cond_wait(&condSocketsAcceptees,&mutexSocketsAcceptees);
+
+		sService = socketsAcceptees[indiceLecture];
+		socketsAcceptees[indiceLecture] = -1;
+		indiceLecture++;
+		if (indiceLecture == TAILLE_FILE_ATTENTE) indiceLecture = 0;
+		pthread_mutex_unlock(&mutexSocketsAcceptees);
+		// Traitement de la connexion (consommation de la tâche)
+
+		printf("\t[THREAD %p] Je m'occupe de la socket %d\n",(void*)pthread_self(),sService);
+		
+		TraitementConnexion(sService);
+	}
 }
 
 
@@ -63,6 +103,10 @@ void HandlerSIGINT(int s)
 {
 	printf("\nArret du serveur.\n");
 	close(sEcoute);
+	pthread_mutex_lock(&mutexSocketsAcceptees);
+	for (int i=0 ; i<TAILLE_FILE_ATTENTE ; i++)
+		if (socketsAcceptees[i] != -1) close(socketsAcceptees[i]);
+	pthread_mutex_unlock(&mutexSocketsAcceptees);
 	SMOP_Close();
 	exit(0);
 }
