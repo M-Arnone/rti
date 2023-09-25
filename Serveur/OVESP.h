@@ -1,5 +1,5 @@
-#ifndef SMOP_H
-#define SMOP_H
+#ifndef OVESP_H
+#define OVESP_H
 #define NB_MAX_CLIENTS 100
 
 #include <pthread.h>

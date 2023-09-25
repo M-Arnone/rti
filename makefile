@@ -20,14 +20,14 @@ moc_windowclient.o :	moc_windowclient.cpp
 		echo creation de moc_windowclient...
 		g++ -Wno-unused-parameter -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I../UNIX_DOSSIER_FINAL -I. -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I. -I. -I/usr/lib64/qt5/mkspecs/linux-g++ -o moc_windowclient.o moc_windowclient.cpp
 
-CreationBD:	CreationBD.cpp
+CreationBD:	BD/CreationBD.cpp
 			echo creation de la BD
-			g++ -o CreationBD CreationBD.cpp -I/usr/include/mysql -m64 -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
+			g++ -o CreationBD BD/CreationBD.cpp -I/usr/include/mysql -m64 -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
 
 
-Serveur:	Serveur.cpp Tcp.o SMOP.o
+Serveur:	Serveur.cpp Tcp.o OVESP.o
 		echo compilation de Serveur..
-		g++ -Wall -std=c++11 Serveur.cpp Tcp.o SMOP.o -pthread -o Serveur
+		g++ -Wall -std=c++11 Serveur.cpp Tcp.o OVESP.o -pthread -o Serveur
 
 
 Tcp.o:	Tcp.cpp
@@ -35,9 +35,9 @@ Tcp.o:	Tcp.cpp
 		g++ -Wno-unused-parameter -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I../UNIX_DOSSIER_FINAL -I. -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I. -I. -I/usr/lib64/qt5/mkspecs/linux-g++ -o Tcp.o Tcp.cpp
 
 
-SMOP.o:	SMOP.cpp
+OVESP.o:	OVESP.cpp
 		echo creation du protocole...
-		g++ -Wall -std=c++11 -c SMOP.cpp -o SMOP.o
+		g++ -Wall -std=c++11 -c OVESP.cpp -o OVESP.o
 
 
 clean:
