@@ -9,6 +9,7 @@ int sEcoute;
 // Gestion du pool de threads
 #define NB_THREADS_POOL 2
 #define TAILLE_FILE_ATTENTE 20
+#define PORT_ACHAT 1234
 int socketsAcceptees[TAILLE_FILE_ATTENTE];
 int indiceEcriture=0, indiceLecture=0;
 pthread_mutex_t mutexSocketsAcceptees;
@@ -33,7 +34,7 @@ int main(){
 	}
 
 	// Creation de la socket d'écoute
-	if ((sEcoute = ServerSocket(1234))== -1){
+	if ((sEcoute = ServerSocket(PORT_ACHAT))== -1){
 			perror("Erreur de ServeurSocket");
 			exit(1);
 	}

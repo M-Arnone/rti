@@ -1,4 +1,5 @@
 #include "OVESP.h"
+#include "queries.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,6 +7,7 @@
 #include <pthread.h>
 #include <stdbool.h>
 #include <sys/socket.h>
+
 
 //***** Etat du protocole : liste des clients loggés ****************
 int clients[NB_MAX_CLIENTS];
@@ -82,9 +84,7 @@ bool SMOP(char* requete, char* reponse,int socket)
 //***** Traitement des requetes *************************************
 bool SMOP_Login(const char* user,const char* password)
 {
-    if (strcmp(user,"wagner")==0 && strcmp(password,"abc123")==0) return true;
-    if (strcmp(user,"charlet")==0 && strcmp(password,"xyz456")==0) return true;
-    return false;
+    return ifUserExist(user,password);
 }
 
 int SMOP_Operation(char op,int a,int b)
