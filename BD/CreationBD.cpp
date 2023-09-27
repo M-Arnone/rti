@@ -40,14 +40,14 @@ ARTICLE Elm[] =
 
 int main(int argc,char *argv[])
 {
-  // Connection a MySql
-  printf("Connection a la BD...\n");
+  // Connexion a MySql
+  printf("Connexion a la BD...\n");
   MYSQL* connexion = mysql_init(NULL);
   mysql_real_connect(connexion,"localhost","Student","PassStudent1_","PourStudent",0,0,0);
 
   // Creation d'une table UNIX_FINAL
   printf("Creation de la table articles...\n");
-  mysql_query(connexion,"drop table articles;"); // au cas ou elle existerait deja
+  mysql_query(connexion,"drop table IF EXISTS  articles;"); // au cas ou elle existerait deja
   mysql_query(connexion,"create table articles (id INT(4) auto_increment primary key, intitule varchar(20),prix FLOAT(4),stock INT(4),image varchar(20));");
 
   // Ajout de tuples dans la table UNIX_FINAL
@@ -58,6 +58,27 @@ int main(int argc,char *argv[])
 	  sprintf(requete,"insert into articles values (NULL,'%s',%f,%d,'%s');",Elm[i].intitule,Elm[i].prix,Elm[i].stock,Elm[i].image);
 	  mysql_query(connexion,requete);
   }
+
+  //clients -- Id, login, password
+  printf("Creation de la table clients...\n");
+  mysql_query(connexion,"drop table IF EXISTS clients;"); // au cas ou elle existerait deja
+  mysql_query(connexion,"create table clients (id INT(4) auto_increment primary key, login varchar(20),password varchar(20));");
+
+    // Création de la table factures
+    printf("Création de la table factures...\n");
+    mysql_query(connexion, "DROP TABLE IF EXISTS factures;"); // Supprime la table si elle existe déjà
+    mysql_query(connexion, "CREATE TABLE factures (id INT(4) AUTO_INCREMENT PRIMARY KEY, idClient INT(4), date DATE, montant FLOAT(4), paye BOOLEAN);");
+
+    // Création de la table ventes
+    printf("Création de la table ventes...\n");
+    mysql_query(connexion, "DROP TABLE IF EXISTS ventes;"); // Supprime la table si elle existe déjà
+    mysql_query(connexion, "CREATE TABLE ventes (idFacture INT(4), idArticle INT(4), quantite INT(4));");
+
+    // Ajout de clés étrangères
+    printf("Ajout de clés étrangères...\n");
+    mysql_query(connexion, "ALTER TABLE factures ADD FOREIGN KEY (idClient) REFERENCES clients(id);");
+    mysql_query(connexion, "ALTER TABLE ventes ADD FOREIGN KEY (idFacture) REFERENCES factures(id);");
+    mysql_query(connexion, "ALTER TABLE ventes ADD FOREIGN KEY (idArticle) REFERENCES articles(id);");
 
   // Deconnection de la BD
   mysql_close(connexion);
