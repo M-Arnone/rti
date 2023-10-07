@@ -15,7 +15,7 @@ bool SMOP_Login(const char* user,const char* password);
 void SMOP_Logout();
 void SMOP_Operation(char op,int a,int b);
 
-#define REPERTOIRE_IMAGES "images/"
+#define REPERTOIRE_IMAGES "Client/images/"
 
 WindowClient::WindowClient(QWidget *parent) : QMainWindow(parent), ui(new Ui::WindowClient)
 {
