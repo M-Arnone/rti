@@ -1,5 +1,4 @@
 #include "OVESP.h"
-#include "queries.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,6 +25,7 @@ bool SMOP(char* requete, char* reponse,int socket)
     // ***** LOGIN ******************************************
     if (strcmp(ptr,"LOGIN") == 0){
 
+        printf("\tPASSAGE tPASSAGE tPASSAGE\n");
         char user[50], password[50];
         
         strcpy(user,strtok(NULL,"#"));
@@ -37,7 +37,7 @@ bool SMOP(char* requete, char* reponse,int socket)
             return false;
         }
         else{
-            if (SMOP_Login(user,password)){
+            if (SMOP_Login(user,password) == AUTH_SUCCESS){
                 sprintf(reponse,"LOGIN#ok");
                 ajoute(socket);
             }
@@ -57,48 +57,27 @@ bool SMOP(char* requete, char* reponse,int socket)
         return false;
     }
 
-    // ***** OPER *******************************************
-    if (strcmp(ptr,"OPER") == 0)
-    {
-        char op;
-        int a,b;
-        ptr = strtok(NULL,"#");
-        op = ptr[0];
-        a = atoi(strtok(NULL,"#"));
-        b = atoi(strtok(NULL,"#"));
-        printf("\t[THREAD %p] OPERATION %d %c %d\n",(void*)pthread_self(),a,op,b);
-        if (estPresent(socket) == -1) sprintf(reponse,"OPER#ko#Client non loggé!");
-        else
-        {
-            try
-            {
-                int resultat = SMOP_Operation(op,a,b);
-                sprintf(reponse,"OPER#ok#%d",resultat);
-            }
-            catch(int) { sprintf(reponse,"OPER#ko#Division par zéro !"); }
-        }
-    }
     return true;
 }
 
 //***** Traitement des requetes *************************************
-bool SMOP_Login(const char* user,const char* password)
+enum AuthenticationResult SMOP_Login(const char* user,const char* password)
 {
-    return ifUserExist(user,password);
+    enum AuthenticationResult result =  authenticateUser(user,password);
+    switch (result) {
+        case AUTH_SUCCESS:
+            printf("Authentification réussie\n");
+            break;
+        case AUTH_INCORRECT_PASSWORD:
+            printf("Mot de passe incorrect\n");
+            break;
+        case AUTH_USERNAME_NOT_FOUND:
+            printf("Nom d'utilisateur introuvable\n");
+            break;
+    }
+    return result;
 }
 
-int SMOP_Operation(char op,int a,int b)
-{
-    if (op == '+') return a+b;
-    if (op == '-') return a-b;
-    if (op == '*') return a*b;
-    if (op == '/')
-    {
-        if (b == 0) throw 1;
-        return a/b;
-    }
-    return 0;
-}
 
 //***** Gestion de l'état du protocole ******************************
 int estPresent(int socket)

@@ -15,7 +15,13 @@
 #include <signal.h>
 #include <mysql.h>
 
+enum AuthenticationResult {
+    AUTH_SUCCESS,           // Authentification réussie
+    AUTH_INCORRECT_PASSWORD, // Mot de passe incorrect
+    AUTH_USERNAME_NOT_FOUND  // Nom d'utilisateur introuvable
+};
+
 MYSQL * ConnexionBD();
-bool ifUserExist(const char *, const char *);
+enum AuthenticationResult authenticateUser(const char *, const char *);
 
 #endif

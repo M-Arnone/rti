@@ -13,19 +13,19 @@ MYSQL* ConnexionBD()
     return connexion;
 }
 
-bool ifUserExist(const char *username, const char *password){
+enum AuthenticationResult authenticateUser(const char *username, const char *password){
     MYSQL *connexion = ConnexionBD();
+
+    printf("\n\n\nNOM : %s\n",username);
+    printf("PASSWORD : %s\n",password);
 
     // Échapper les caractères spéciaux dans le nom d'utilisateur
     char escaped_username[100];
     mysql_real_escape_string(connexion, escaped_username, username, strlen(username));
 
-    // Échapper les caractères spéciaux dans le mot de passe
-    char escaped_password[100];
-    mysql_real_escape_string(connexion, escaped_password, password, strlen(password));
-
+    
     char query[256];
-    snprintf(query, sizeof(query), "SELECT * FROM clients WHERE login = '%s' AND password = '%s'", escaped_username, escaped_password);
+    snprintf(query, sizeof(query), "SELECT * FROM clients WHERE login = '%s'", escaped_username);
 
     if (mysql_query(connexion, query) != 0) {
         fprintf(stderr, "Échec de l'exécution de la requête : %s\n", mysql_error(connexion));
@@ -41,9 +41,26 @@ bool ifUserExist(const char *username, const char *password){
     }
 
     int num_rows = mysql_num_rows(result);
+    if (num_rows == 0) {
+        mysql_free_result(result);
+        mysql_close(connexion);
+        return AUTH_USERNAME_NOT_FOUND; // Username incorrect
+    }
 
-    mysql_free_result(result);
-    mysql_close(connexion);
-    // Si num_rows est supérieur à zéro, l'utilisateur est authentifié
-    return (num_rows > 0) ? true : false;
+    // Maintenant, nous avons trouvé un nom d'utilisateur correspondant.
+    // Vérifions le mot de passe.
+    MYSQL_ROW row = mysql_fetch_row(result);
+    char *stored_password = row[2]; // row[2] pour aller a la colonne 'password'
+
+    if (strcmp(password, stored_password) == 0) {
+        // Le mot de passe correspond, authentification réussie
+        mysql_free_result(result);
+        mysql_close(connexion);
+        return AUTH_SUCCESS;
+    } else {
+        // Le mot de passe ne correspond pas
+        mysql_free_result(result);
+        mysql_close(connexion);
+        return AUTH_INCORRECT_PASSWORD;
+    }
 }

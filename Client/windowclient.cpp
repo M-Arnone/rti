@@ -302,8 +302,12 @@ void WindowClient::closeEvent(QCloseEvent *event)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void WindowClient::on_pushButtonLogin_clicked()
 {
-  if(SMOP_Login(getNom(),getMotDePasse()))
-      loginOK();
+  char messageRecu[1400];
+  char messageEnvoye[1400];
+  sprintf(messageEnvoye, "LOGIN#%s#%s", getNom(), getMotDePasse());
+  Echange(messageEnvoye, messageRecu);
+  printf("\n\nmessageRecu : %s\n",messageRecu);
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -353,63 +357,9 @@ void WindowClient::on_pushButtonPayer_clicked()
 void HandlerSIGINT(int s)
 {
     printf("\nArret du client.\n");
-    SMOP_Logout();
+    //SMOP_Logout();
     shutdown(sClient,SHUT_RDWR);
     exit(0);
-}
-//***** Gestion du protocole SMOP ***********************************
-bool SMOP_Login(const char* user,const char* password)
-{
-    char requete[200],reponse[200];
-    bool onContinue = true;
-
-    // ***** Construction de la requete *********************
-    sprintf(requete,"LOGIN#%s#%s",user,password);
-
-    // ***** Envoi requete + réception réponse **************
-    Echange(requete,reponse);
-
-    // ***** Parsing de la réponse **************************
-    char *ptr = strtok(reponse,"#"); // entête = LOGIN (normalement...)
-    ptr = strtok(NULL,"#"); // statut = ok ou ko
-    if (strcmp(ptr,"ok") == 0) printf("Login OK.\n");
-    else{
-            ptr = strtok(NULL,"#"); // raison du ko
-            printf("Erreur de login: %s\n",ptr);
-            onContinue = false;
-    }
-    return onContinue;
-}
-void SMOP_Logout()
-{
-    char requete[200],reponse[200];
-    int nbEcrits, nbLus;
-    // ***** Construction de la requete *********************
-    sprintf(requete,"LOGOUT");
-    // ***** Envoi requete + réception réponse **************
-    Echange(requete,reponse);
-    // ***** Parsing de la réponse **************************
-    // pas vraiment utile...
-}
-//*******************************************************************
-void SMOP_Operation(char op,int a,int b)
-{
-    char requete[200],reponse[200];
-    // ***** Construction de la requete *********************
-    sprintf(requete,"OPER#%c#%d#%d",op,a,b);
-    // ***** Envoi requete + réception réponse **************
-    Echange(requete,reponse);
-    // ***** Parsing de la réponse **************************
-    char *ptr = strtok(reponse,"#"); // entête = OPER (normalement...)
-    ptr = strtok(NULL,"#"); // statut = ok ou ko
-    if (strcmp(ptr,"ok") == 0){
-        ptr = strtok(NULL,"#"); // résultat du calcul
-        printf("Résultat = %s\n",ptr);
-    }
-    else{
-        ptr = strtok(NULL,"#"); // raison du ko
-        printf("Erreur: %s\n",ptr);
-    }
 }
 //***** Echange de données entre client et serveur ******************
 void Echange(char* requete, char* reponse)
