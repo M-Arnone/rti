@@ -304,9 +304,27 @@ void WindowClient::on_pushButtonLogin_clicked()
 {
   char messageRecu[1400];
   char messageEnvoye[1400];
-  sprintf(messageEnvoye, "LOGIN#%s#%s", getNom(), getMotDePasse());
+  int newClient = 0;
+  if(isNouveauClientChecked())
+    newClient = 1;
+  sprintf(messageEnvoye, "LOGIN#%s#%s#%d", getNom(), getMotDePasse(),newClient);
+
   Echange(messageEnvoye, messageRecu);
-  printf("\n\nmessageRecu : %s\n",messageRecu);
+  printf("\n\nmessageRecu : %s\n",messageRecu);//decompose le message recu
+   if (strcmp(messageRecu, "LOGIN#ko#pwd") == 0) {
+        dialogueErreur("Erreur d'authentification", "Mauvais mot de passe !");
+    } else if (strcmp(messageRecu, "LOGIN#ko#username") == 0) {
+          dialogueErreur("Erreur d'authentification", "Mauvais identifiants !");
+    } else {
+        if (strcmp(messageRecu, "LOGIN#ok") == 0) {
+        ui->pushButtonLogin->setDisabled(true);
+        ui->lineEditNom->setDisabled(true);
+        ui->lineEditMotDePasse->setDisabled(true);
+        ui->pushButtonLogout->setEnabled(true);
+        setPublicite("JEMEPPE");
+        dialogueMessage("Authentification réussie", "Vous êtes connecté !");
+        }
+    }
 
 }
 

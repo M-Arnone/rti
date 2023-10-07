@@ -25,26 +25,36 @@ bool SMOP(char* requete, char* reponse,int socket)
     // ***** LOGIN ******************************************
     if (strcmp(ptr,"LOGIN") == 0){
 
-        printf("\tPASSAGE tPASSAGE tPASSAGE\n");
         char user[50], password[50];
-        
+        int newUser;
         strcpy(user,strtok(NULL,"#"));
         strcpy(password,strtok(NULL,"#"));
+        newUser = atoi(strtok(NULL,"#"));
         printf("\t[THREAD %p] LOGIN de %s\n",(void*)pthread_self(),user);
 
         if (estPresent(socket) >= 0){ // client déjà loggé
             sprintf(reponse,"LOGIN#ko#Client déjà loggé !");
-            return false;
+            return true;
         }
         else{
             if (SMOP_Login(user,password) == AUTH_SUCCESS){
                 sprintf(reponse,"LOGIN#ok");
                 ajoute(socket);
             }
-            else{
-                sprintf(reponse,"LOGIN#ko#Mauvais identifiants !");
-                return false;
-            }
+            else if(SMOP_Login(user,password) == AUTH_INCORRECT_PASSWORD)
+                        sprintf(reponse,"LOGIN#ko#pwd");
+                    else 
+                        if(SMOP_Login(user,password) == AUTH_USERNAME_NOT_FOUND){
+                            sprintf(reponse,"LOGIN#ko#username");
+                            if(newUser == 1){
+                                sprintf(reponse,"SIGNUP");
+                                SMOP_Signup(user,password);
+                            }
+                                
+                        }
+            
+            return true;
+            
         }
     }
 
@@ -54,7 +64,7 @@ bool SMOP(char* requete, char* reponse,int socket)
         printf("\t[THREAD %p] LOGOUT\n",(void*)pthread_self());
         retire(socket);
         sprintf(reponse,"LOGOUT#ok");
-        return false;
+        return true;
     }
 
     return true;
@@ -76,6 +86,10 @@ enum AuthenticationResult SMOP_Login(const char* user,const char* password)
             break;
     }
     return result;
+}
+
+void SMOP_Signup(const char* user,const char* password){
+    addUser(user,password);
 }
 
 

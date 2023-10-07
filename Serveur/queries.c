@@ -64,3 +64,18 @@ enum AuthenticationResult authenticateUser(const char *username, const char *pas
         return AUTH_INCORRECT_PASSWORD;
     }
 }
+
+void addUser(const char *username, const char *password) {
+    MYSQL *connexion = ConnexionBD(); // Assurez-vous que ConnexionBD() est défini dans votre code
+
+    char query[256];
+    snprintf(query, sizeof(query), "INSERT INTO clients (login, password) VALUES ('%s', '%s')", username, password);
+
+    if (mysql_query(connexion, query) != 0) {
+        fprintf(stderr, "Échec de l'insertion de l'utilisateur : %s\n", mysql_error(connexion));
+    } else {
+        printf("Utilisateur ajouté avec succès.\n");
+    }
+
+    mysql_close(connexion);
+}

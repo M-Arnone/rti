@@ -23,5 +23,6 @@ enum AuthenticationResult {
 
 MYSQL * ConnexionBD();
 enum AuthenticationResult authenticateUser(const char *, const char *);
+void addUser(const char *, const char *);
 
 #endif
