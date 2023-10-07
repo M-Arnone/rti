@@ -33,11 +33,11 @@ Serveur/Tcp.o:	Serveur/Tcp.cpp
 
 Serveur/OVESP.o:	Serveur/OVESP.cpp Serveur/queries.o
 		echo création du protocole...
-		g++ -Wall -std=c++11 -c Serveur/OVESP.cpp Serveur/queries.o -o Serveur/OVESP.o -I/usr/include/mysql -m64 -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
+		g++ -Wall -std=c++11 -c Serveur/OVESP.cpp -o Serveur/OVESP.o -I/usr/include/mysql -m64 -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
 
 Serveur/queries.o:	Serveur/queries.c
 	echo compilation des requetes... 
-	g++ -std=c11 -c Serveur/queries.c -o Serveur/queries.o -I/usr/include/mysql -m64 -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
+	g++ -std=c++11 -c Serveur/queries.c -o Serveur/queries.o -I/usr/include/mysql -m64 -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
 
 
 clean:
