@@ -79,3 +79,40 @@ void addUser(const char *username, const char *password) {
 
     mysql_close(connexion);
 }
+
+MYSQL_ROW getArticleById(int articleId) {
+    MYSQL *connexion = ConnexionBD();
+
+    char query[256];
+    snprintf(query, sizeof(query), "SELECT * FROM articles WHERE id = %d", articleId);
+
+    if (mysql_query(connexion, query) != 0) {
+        fprintf(stderr, "Échec de l'exécution de la requête : %s\n", mysql_error(connexion));
+        mysql_close(connexion);
+        exit(1);
+    }
+
+    MYSQL_RES *result = mysql_store_result(connexion);
+    if (result == NULL) {
+        fprintf(stderr, "Échec de la récupération du résultat : %s\n", mysql_error(connexion));
+        mysql_close(connexion);
+        exit(1);
+    }
+
+    int num_rows = mysql_num_rows(result);
+    if (num_rows == 0) {
+        // L'article n'a pas été trouvé, renvoyer une erreur
+        mysql_free_result(result);
+        mysql_close(connexion);
+        fprintf(stderr, "L'article avec l'ID %d n'a pas été trouvé.\n", articleId);
+        return 0; // Vous pouvez choisir de gérer l'erreur de manière différente si nécessaire
+    }
+
+    // Récupérer les données de l'article
+    MYSQL_ROW row = mysql_fetch_row(result);
+
+    mysql_free_result(result);
+    mysql_close(connexion);
+
+    return row;
+}

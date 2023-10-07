@@ -19,6 +19,7 @@ pthread_mutex_t mutexClients = PTHREAD_MUTEX_INITIALIZER;
 //***** Parsing de la requete et creation de la reponse *************
 bool SMOP(char* requete, char* reponse,int socket)
 {
+    MYSQL_ROW tuple;
     // ***** Récupération nom de la requete *****************
 
     char *ptr = strtok(requete,"#");
@@ -66,7 +67,14 @@ bool SMOP(char* requete, char* reponse,int socket)
             
         }
     }
-
+    // ***** CONSULT ******************************************
+    if (strcmp(ptr,"CONSULT") == 0){
+        int numArticle = atoi(strtok(NULL,"#"));
+        tuple = getArticleById(numArticle);
+        if(!tuple)
+            sprintf(reponse,"CONSULT#ko#-1");
+        else sprintf(reponse,"CONSULT#ok#%d#%s#%d#%f#%s",atoi(tuple[0]),tuple[1],atoi(tuple[2]),atof(tuple[3]),tuple[4]);
+    }
 
     return true;
 }

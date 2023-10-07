@@ -15,6 +15,8 @@ bool SMOP_Login(const char* user,const char* password);
 void SMOP_Logout();
 void SMOP_Operation(char op,int a,int b);
 
+int numArticle = 1;
+
 #define REPERTOIRE_IMAGES "Client/images/"
 
 WindowClient::WindowClient(QWidget *parent) : QMainWindow(parent), ui(new Ui::WindowClient)
@@ -59,8 +61,8 @@ WindowClient::WindowClient(QWidget *parent) : QMainWindow(parent), ui(new Ui::Wi
 
 
     // Exemples à supprimer
-    setArticle("pommes",5.53,18,"pommes.jpg");
-    ajouteArticleTablePanier("cerises",8.96,2);
+    //setArticle("pommes",5.53,18,"pommes.jpg");
+    //ajouteArticleTablePanier("cerises",8.96,2);
 }
 
 WindowClient::~WindowClient()
@@ -317,19 +319,24 @@ void WindowClient::on_pushButtonLogin_clicked()
   sprintf(messageEnvoye, "LOGIN#%s#%s#%d", getNom(), getMotDePasse(),newClient);
 
   Echange(messageEnvoye, messageRecu);
-  printf("\n\nmessageRecu : %s\n",messageRecu);//decompose le message recu
    if (strcmp(messageRecu, "LOGIN#ko#pwd") == 0) {
         dialogueErreur("Erreur d'authentification", "Mauvais mot de passe !");
     } else if (strcmp(messageRecu, "LOGIN#ko#username") == 0) {
           dialogueErreur("Erreur d'authentification", "Mauvais identifiants !");
     } else {
         if (strcmp(messageRecu, "LOGIN#ok") == 0) {
-        // ui->pushButtonLogin->setDisabled(true);
+              loginOK();
+              setPublicite("JEMEPPE");
+              strcpy(messageEnvoye,"");
+              sprintf(messageEnvoye, "CONSULT#1");
+              Echange(messageEnvoye, messageRecu);
+              ARTICLE a;
+              a = remplirArticle(messageRecu);
+              setArticle(a.intitule,a.prix,a.stock,a.image);
 
-        // ui->pushButtonLogout->setEnabled(true);
-        loginOK();
-        setPublicite("JEMEPPE");
-        dialogueMessage("Authentification réussie", "Vous êtes connecté !");
+              
+
+              dialogueMessage("Authentification réussie", "Vous êtes connecté !");
         }
     }
 
@@ -353,13 +360,36 @@ void WindowClient::on_pushButtonLogout_clicked()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void WindowClient::on_pushButtonSuivant_clicked()
 {
-
+  char messageRecu[1400];
+  char messageEnvoye[1400];
+  
+  if(numArticle == 21)
+    dialogueErreur("Numero d'article", "Plus d'articles...");
+  else{
+    numArticle++;
+    sprintf(messageEnvoye, "CONSULT#%d",numArticle);
+    Echange(messageEnvoye, messageRecu);
+    ARTICLE a;
+    a = remplirArticle(messageRecu);
+    setArticle(a.intitule,a.prix,a.stock,a.image);
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void WindowClient::on_pushButtonPrecedent_clicked()
 {
-
+  char messageRecu[1400];
+  char messageEnvoye[1400];
+  if(numArticle == 1)
+    dialogueErreur("Numero d'article", "Plus d'articles...");
+  else{
+    numArticle--;
+    sprintf(messageEnvoye, "CONSULT#%d",numArticle);
+    Echange(messageEnvoye, messageRecu);
+    ARTICLE a;
+    a = remplirArticle(messageRecu);
+    setArticle(a.intitule,a.prix,a.stock,a.image);
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -420,4 +450,25 @@ void Echange(char* requete, char* reponse)
     }
     reponse[nbLus] = 0;
 }
+//MES FONCTIONS
+ARTICLE WindowClient::remplirArticle(char* m)
+{
+    ARTICLE a;
+    char* token = strtok(m, "#");
+    token = strtok(NULL, "#");
+    token = strtok(nullptr, "#");
+    a.id = atoi(token);
+    token = strtok(nullptr, "#");
+    strncpy(a.intitule, token, sizeof(a.intitule) - 1);
+    a.intitule[sizeof(a.intitule) - 1] = '\0';
+    token = strtok(nullptr, "#");
+    a.prix = atof(token);
+    token = strtok(nullptr, "#");
+    a.stock = atoi(token);
+    token = strtok(nullptr, "#");
+    strncpy(a.image, token, sizeof(a.image) - 1);
+    a.image[sizeof(a.image) - 1] = '\0';
 
+    return a;
+
+}

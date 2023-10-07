@@ -7,6 +7,15 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class WindowClient; }
 QT_END_NAMESPACE
 
+typedef struct ARTICLE
+{
+  int   id;
+  char  intitule[20];
+  float prix;
+  int   stock;  
+  char  image[20];
+} ARTICLE; 
+
 class WindowClient : public QMainWindow
 {
     Q_OBJECT
@@ -39,6 +48,9 @@ public:
     // Boites de dialogue
     void dialogueMessage(const char *titre, const char *message);
     void dialogueErreur(const char *titre, const char *message);
+
+    ARTICLE remplirArticle(char *);
+    
 
 private slots:
     void on_pushButtonLogin_clicked();

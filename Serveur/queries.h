@@ -24,5 +24,6 @@ enum AuthenticationResult {
 MYSQL * ConnexionBD();
 enum AuthenticationResult authenticateUser(const char *, const char *);
 void addUser(const char *, const char *);
+MYSQL_ROW getArticleById(int articleId);
 
 #endif
