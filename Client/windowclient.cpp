@@ -194,6 +194,9 @@ void WindowClient::loginOK()
   ui->pushButtonSupprimer->setEnabled(true);
   ui->pushButtonViderPanier->setEnabled(true);
   ui->pushButtonPayer->setEnabled(true);
+
+  ui->lineEditNom->setDisabled(true);
+  ui->lineEditMotDePasse->setDisabled(true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -221,6 +224,10 @@ void WindowClient::logoutOK()
 
   w->videTablePanier();
   w->setTotal(-1.0);
+
+  ui->lineEditNom->setEnabled(true);
+  ui->lineEditMotDePasse->setEnabled(true);
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -317,10 +324,10 @@ void WindowClient::on_pushButtonLogin_clicked()
           dialogueErreur("Erreur d'authentification", "Mauvais identifiants !");
     } else {
         if (strcmp(messageRecu, "LOGIN#ok") == 0) {
-        ui->pushButtonLogin->setDisabled(true);
-        ui->lineEditNom->setDisabled(true);
-        ui->lineEditMotDePasse->setDisabled(true);
-        ui->pushButtonLogout->setEnabled(true);
+        // ui->pushButtonLogin->setDisabled(true);
+
+        // ui->pushButtonLogout->setEnabled(true);
+        loginOK();
         setPublicite("JEMEPPE");
         dialogueMessage("Authentification réussie", "Vous êtes connecté !");
         }
@@ -331,8 +338,16 @@ void WindowClient::on_pushButtonLogin_clicked()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void WindowClient::on_pushButtonLogout_clicked()
 {
-  //SMOP_Logout();
-  //logoutOK();
+  char messageRecu[1400];
+  char messageEnvoye[1400];
+    
+  strcpy(messageEnvoye, "");
+  strcpy(messageEnvoye, "LOGOUT#oui");
+  Echange(messageEnvoye, messageRecu);
+
+  printf("\n\nMessage recu : %s\n\n",messageRecu);
+  
+  logoutOK();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////

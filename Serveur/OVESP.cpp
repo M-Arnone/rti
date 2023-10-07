@@ -22,6 +22,15 @@ bool SMOP(char* requete, char* reponse,int socket)
     // ***** Récupération nom de la requete *****************
 
     char *ptr = strtok(requete,"#");
+    // ***** LOGOUT *****************************************
+    if (strcmp(ptr,"LOGOUT") == 0)
+    {
+        printf("\t[THREAD %p] LOGOUT\n",(void*)pthread_self());
+        retire(socket);
+        sprintf(reponse,"LOGOUT#ok");
+        return true;
+    }
+
     // ***** LOGIN ******************************************
     if (strcmp(ptr,"LOGIN") == 0){
 
@@ -58,14 +67,6 @@ bool SMOP(char* requete, char* reponse,int socket)
         }
     }
 
-    // ***** LOGOUT *****************************************
-    if (strcmp(ptr,"LOGOUT") == 0)
-    {
-        printf("\t[THREAD %p] LOGOUT\n",(void*)pthread_self());
-        retire(socket);
-        sprintf(reponse,"LOGOUT#ok");
-        return true;
-    }
 
     return true;
 }
