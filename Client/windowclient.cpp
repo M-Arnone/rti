@@ -7,15 +7,24 @@ using namespace std;
 
 extern WindowClient *w;
 
+typedef struct
+{
+  int   id;
+  char  intitule[50];
+  double prix;
+  int   quantite;  
+} ARTICLEPANIER;
+
 int sClient;
 void HandlerSIGINT(int s);
 
 void Echange(char* requete, char* reponse);
 bool SMOP_Login(const char* user,const char* password);
 void SMOP_Logout();
-void SMOP_Operation(char op,int a,int b);
 
 int numArticle = 1;
+ARTICLEPANIER tabPanier[20];
+
 
 #define REPERTOIRE_IMAGES "Client/images/"
 
@@ -395,7 +404,10 @@ void WindowClient::on_pushButtonPrecedent_clicked()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void WindowClient::on_pushButtonAcheter_clicked()
 {
-
+  char messageRecu[1400];
+  char messageEnvoye[1400];
+  sprintf(messageEnvoye, "ACHAT#%d#%d",numArticle,getQuantite());
+  Echange(messageEnvoye, messageRecu);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -419,8 +431,13 @@ void WindowClient::on_pushButtonPayer_clicked()
 //***** Fin de connexion ********************************************
 void HandlerSIGINT(int s)
 {
+    char messageRecu[1400];
+    char messageEnvoye[1400];
     printf("\nArret du client.\n");
-    //SMOP_Logout();
+    strcpy(messageEnvoye, "");
+    strcpy(messageEnvoye, "LOGOUT#oui");
+    Echange(messageEnvoye, messageRecu);
+
     shutdown(sClient,SHUT_RDWR);
     exit(0);
 }

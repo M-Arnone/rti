@@ -70,7 +70,7 @@ int main(){
 		if (indiceEcriture == TAILLE_FILE_ATTENTE) indiceEcriture = 0;
 		pthread_mutex_unlock(&mutexSocketsAcceptees);
 		pthread_cond_signal(&condSocketsAcceptees);
-}
+	}
 }
 
 

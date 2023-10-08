@@ -75,6 +75,10 @@ bool SMOP(char* requete, char* reponse,int socket)
             sprintf(reponse,"CONSULT#ko#-1");
         else sprintf(reponse,"CONSULT#ok#%d#%s#%d#%f#%s",atoi(tuple[0]),tuple[1],atoi(tuple[2]),atof(tuple[3]),tuple[4]);
     }
+    // ***** ACHAT ******************************************
+    if (strcmp(ptr,"ACHAT") == 0){
+        
+    }
 
     return true;
 }

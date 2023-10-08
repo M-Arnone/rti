@@ -7,7 +7,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class WindowClient; }
 QT_END_NAMESPACE
 
-typedef struct ARTICLE
+typedef struct
 {
   int   id;
   char  intitule[20];
