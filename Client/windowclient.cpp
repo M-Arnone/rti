@@ -23,7 +23,7 @@ bool SMOP_Login(const char* user,const char* password);
 void SMOP_Logout();
 
 int numArticle = 1;
-ARTICLEPANIER tabPanier[20];
+ARTICLEPANIER tabPanierClient[20];
 
 
 #define REPERTOIRE_IMAGES "Client/images/"
@@ -406,8 +406,10 @@ void WindowClient::on_pushButtonAcheter_clicked()
 {
   char messageRecu[1400];
   char messageEnvoye[1400];
+  
   sprintf(messageEnvoye, "ACHAT#%d#%d",numArticle,getQuantite());
   Echange(messageEnvoye, messageRecu);
+  printf("\nMessage recu : %s\n",messageRecu);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////

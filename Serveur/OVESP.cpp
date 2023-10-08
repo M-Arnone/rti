@@ -23,6 +23,7 @@ bool SMOP(char* requete, char* reponse,int socket)
     // ***** Récupération nom de la requete *****************
 
     char *ptr = strtok(requete,"#");
+    printf("\nREQUETE : %s\n",requete);
     // ***** LOGOUT *****************************************
     if (strcmp(ptr,"LOGOUT") == 0)
     {
@@ -69,6 +70,7 @@ bool SMOP(char* requete, char* reponse,int socket)
     }
     // ***** CONSULT ******************************************
     if (strcmp(ptr,"CONSULT") == 0){
+        printf("\n\npassage CONSULT\n\n");
         int numArticle = atoi(strtok(NULL,"#"));
         tuple = getArticleById(numArticle);
         if(!tuple)
@@ -77,7 +79,7 @@ bool SMOP(char* requete, char* reponse,int socket)
     }
     // ***** ACHAT ******************************************
     if (strcmp(ptr,"ACHAT") == 0){
-        
+        sprintf(reponse,"JEMEPPE");
     }
 
     return true;
