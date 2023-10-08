@@ -4,7 +4,7 @@
 
 void HandlerSIGINT(int s);
 void TraitementConnexion(int sService);
-void* FctThreadClient(void* p);
+void* FctThread(void* p);
 int sEcoute;
 // Gestion du pool de threads
 #define NB_THREADS_POOL 2
@@ -14,6 +14,8 @@ int socketsAcceptees[TAILLE_FILE_ATTENTE];
 int indiceEcriture=0, indiceLecture=0;
 pthread_mutex_t mutexSocketsAcceptees;
 pthread_cond_t condSocketsAcceptees;
+
+ARTICLEPANIER tabPanierServeur[20];
 
 
 int main(){
@@ -43,7 +45,7 @@ int main(){
 	printf("Création du pool de threads.\n");
 	pthread_t th;
 	for (int i=0 ; i<NB_THREADS_POOL ; i++)
-		pthread_create(&th,NULL,FctThreadClient,NULL);
+		pthread_create(&th,NULL,FctThread,NULL);
 
 
 
@@ -74,11 +76,19 @@ int main(){
 }
 
 
-void* FctThreadClient(void* p)
+void* FctThread(void* p)
 {
 	int sService;
 	while(1)
 	{
+		//mets tous les id a 0
+		for (int i = 0; i < 20; i++)
+        {
+            tabPanierServeur[i].id = 0;
+            tabPanierServeur[i].prix = 0;
+            tabPanierServeur[i].quantite = 0;
+        }
+        
 		printf("\t[THREAD %p] Attente socket...\n",(void*)pthread_self());
 		
 		// Attente d'une tâche
@@ -97,19 +107,6 @@ void* FctThreadClient(void* p)
 		
 		TraitementConnexion(sService);
 	}
-}
-
-
-void HandlerSIGINT(int s)
-{
-	printf("\nArret du serveur.\n");
-	close(sEcoute);
-	pthread_mutex_lock(&mutexSocketsAcceptees);
-	for (int i=0 ; i<TAILLE_FILE_ATTENTE ; i++)
-		if (socketsAcceptees[i] != -1) close(socketsAcceptees[i]);
-	pthread_mutex_unlock(&mutexSocketsAcceptees);
-	SMOP_Close();
-	exit(0);
 }
 
 void TraitementConnexion(int sService)
@@ -142,7 +139,25 @@ void TraitementConnexion(int sService)
 			HandlerSIGINT(0);
 		}
 		printf("\t[THREAD %p] Reponse envoyee = %s\n",(void*)pthread_self(),reponse);
+		printf("\t[THREAD %ld] - Mon panier :\n",pthread_self());
+        for(int k = 0 ; k < 20 ; k++)
+        {
+			printf("\tid : %d  - qt :  %d\n",tabPanierServeur[k].id, tabPanierServeur[k].quantite);
+        }
+		printf("\n");
 		if (!onContinue)
 		printf("\t[THREAD %p] Fin de connexion de la socket%d\n",(void*)pthread_self(),sService);
+	}
 }
+
+void HandlerSIGINT(int s)
+{
+	printf("\nArret du serveur.\n");
+	close(sEcoute);
+	pthread_mutex_lock(&mutexSocketsAcceptees);
+	for (int i=0 ; i<TAILLE_FILE_ATTENTE ; i++)
+		if (socketsAcceptees[i] != -1) close(socketsAcceptees[i]);
+	pthread_mutex_unlock(&mutexSocketsAcceptees);
+	SMOP_Close();
+	exit(0);
 }
