@@ -466,7 +466,6 @@ void WindowClient::on_pushButtonSupprimer_clicked()
     {
       if(numArticle == tabPanierClient[getIndiceArticleSelectionne()].id)
       {
-        //requete pour cote client
         sprintf(messageEnvoye, "CONSULT#%d",numArticle);
         Echange(messageEnvoye, messageRecu);
         ARTICLE a;
@@ -487,7 +486,35 @@ void WindowClient::on_pushButtonSupprimer_clicked()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void WindowClient::on_pushButtonViderPanier_clicked()
 {
+  // rajouter dans la base de donnee les elts du caddie 
+  char messageRecu[1400];
+  char messageEnvoye[1400];
+  char tmp[50];
 
+  sprintf(messageEnvoye, "CANCELALL");
+  Echange(messageEnvoye, messageRecu);
+  strcpy(tmp,strtok(messageRecu,"#"));
+  strcpy(tmp,strtok(NULL,"#"));
+  
+  if(strcmp(tmp,"ok") == 0 )
+    {
+      for(int j = 0 ; j < 20 ; j++)
+      {
+        if(numArticle == tabPanierClient[j].id)
+        {
+          sprintf(messageEnvoye, "CONSULT#%d",numArticle);
+          Echange(messageEnvoye, messageRecu);
+          ARTICLE a;
+          a = remplirArticle(messageRecu);
+          setArticle(a.intitule,a.prix,a.stock,a.image);
+        }
+
+        tabPanierClient[j].id = 0;
+        tabPanierClient[j].prix = 0;
+        tabPanierClient[j].quantite = 0;
+      }
+      majCaddie();
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -538,26 +565,7 @@ void Echange(char* requete, char* reponse)
 //MES FONCTIONS
 ARTICLE WindowClient::remplirArticle(char* m)
 {
-    /*ARTICLE a;
-    char* token = strtok(m, "#");
-    token = strtok(NULL, "#");
-    token = strtok(nullptr, "#");
-    a.id = atoi(token);
-    token = strtok(nullptr, "#");
-    strncpy(a.intitule, token, sizeof(a.intitule) - 1);
-    a.intitule[sizeof(a.intitule) - 1] = '\0';
-    token = strtok(nullptr, "#");
-
-    a.prix = atof(token);
-    token = strtok(nullptr, "#");
-    
-    a.stock = atoi(token);
-    token = strtok(nullptr, "#");
-    strncpy(a.image, token, sizeof(a.image) - 1);
-    a.image[sizeof(a.image) - 1] = '\0';
-
-    return a;*/
-    ARTICLE a; // Initialisez la structure à zéro pour éviter des valeurs non initialisées
+    ARTICLE a; 
 
     char* token = strtok(m, "#");
     token = strtok(NULL, "#");
@@ -569,7 +577,7 @@ ARTICLE WindowClient::remplirArticle(char* m)
 
     token = strtok(NULL, ".");
     a.prix = atof(token);
-    a.prix += atof(strtok(NULL,"#"))/1000000; // Arrondir à deux décimales
+    a.prix += atof(strtok(NULL,"#"))/1000000; 
 
     token = strtok(NULL, "#");
     a.stock = atoi(token);
