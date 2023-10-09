@@ -122,6 +122,7 @@ int updateArticleStock(int id, int newqte) {
 
     char requete[256];
     snprintf(requete, sizeof(requete), "UPDATE articles SET stock = %d WHERE id = %d", newqte, id);
+    printf("\nREquete : %s\n",requete);
 
     if (mysql_query(connexion, requete) != 0) {
         fprintf(stderr, "Échec de la mise à jour de la quantité : %s\n", mysql_error(connexion));

@@ -469,14 +469,12 @@ void WindowClient::on_pushButtonSupprimer_clicked()
     {
       if(numArticle == tabPanierClient[getIndiceArticleSelectionne()].id)
       {
-        //requete cote bd
         //requete pour cote client
         sprintf(messageEnvoye, "CONSULT#%d",numArticle);
         Echange(messageEnvoye, messageRecu);
         printf("\nMessage recu : %s\n",messageRecu);
         ARTICLE a;
         a = remplirArticle(messageRecu);
-        a.stock+= tabPanierClient[getIndiceArticleSelectionne()].quantite;
         setArticle(a.intitule,a.prix,a.stock,a.image);
       }
 

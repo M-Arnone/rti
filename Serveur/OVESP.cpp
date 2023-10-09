@@ -119,14 +119,26 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
     if (strcmp(ptr,"CANCEL") == 0){
         int id = atoi(strtok(NULL,"#")),qteDispo,newQte,j;
         bool ok;
-        
+        int i;
 
         tuple = getArticleById(id);
         if(!tuple)
             sprintf(reponse,"CANCEL#ko#ERREUR_SQL#-1");
         else{
              qteDispo = atoi(tuple[3]);
-             newQte = qteDispo + tabPanierServeur[id].quantite;
+             for(i = 0 , ok = true; ok == true && i < 20  ; i++)
+            {
+                if(tabPanierServeur[i].id == id)
+                {
+                    ok = false;
+                    
+                }
+            }
+            newQte = qteDispo + tabPanierServeur[i-1].quantite;
+
+             printf("\nqteDispo : %d\n",qteDispo);
+             printf("tabPanierServeur[%d].quantite :%d\n\n",id-1,tabPanierServeur[id-1].quantite);
+             printf("tabPanierServeur[%d].quantite :%d\n\n",id,tabPanierServeur[id].quantite);
              int rep = updateArticleStock(id,newQte);
              if(!rep)
                 strcpy(reponse,"CANCEL#ko#ERREUR_SQL#-1");
