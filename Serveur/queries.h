@@ -25,6 +25,9 @@ MYSQL * ConnexionBD();
 enum AuthenticationResult authenticateUser(const char *, const char *);
 void addUser(const char *, const char *);
 MYSQL_ROW getArticleById(int articleId);
-int updateArticleStock(int id, int newqte) ;
+int updateArticleStock(int id, int newqte);
+int getUserIdByUsername(const char *username);
+int insererFacture(int idClient, const char* date, int paye);
+MYSQL_ROW getFactureByMaxId(); 
 
 #endif

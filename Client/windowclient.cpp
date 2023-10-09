@@ -24,6 +24,7 @@ void SMOP_Logout();
 
 int numArticle = 1;
 ARTICLEPANIER tabPanierClient[20];
+int numClient;
 
 
 
@@ -325,35 +326,43 @@ void WindowClient::on_pushButtonLogin_clicked()
   char messageRecu[1400];
   char messageEnvoye[1400];
   int newClient = 0;
+  char tampon[50];
+
+
   if(isNouveauClientChecked())
     newClient = 1;
   sprintf(messageEnvoye, "LOGIN#%s#%s#%d", getNom(), getMotDePasse(),newClient);
-
   Echange(messageEnvoye, messageRecu);
-   if (strcmp(messageRecu, "LOGIN#ko#pwd") == 0) {
-        dialogueErreur("Erreur d'authentification", "Mauvais mot de passe !");
-    } else if (strcmp(messageRecu, "LOGIN#ko#username") == 0) {
+
+  strcpy(tampon,strtok(messageRecu,"#"));
+  strcpy(tampon,strtok(NULL,"#"));
+  if(strcmp(tampon,"ok") == 0){
+    numClient = atoi(strtok(NULL,"#"));
+    printf("\nNum Client : %d\n",numClient);
+
+    loginOK();
+    setPublicite("JEMEPPE");
+    strcpy(messageEnvoye,"");
+    sprintf(messageEnvoye, "CONSULT#1");
+    Echange(messageEnvoye, messageRecu);
+    printf("\nMessage recu : %s\n", messageRecu);
+    
+    ARTICLE a;
+    a = remplirArticle(messageRecu);
+    printf("\nARTICLE : %.2f\n", a.prix);
+    setArticle(a.intitule,a.prix,a.stock,a.image);
+
+    dialogueMessage("Authentification réussie", "Vous êtes connecté !");
+  }
+  else{
+    if(strcmp(tampon,"ok") == 0){
+      strcpy(tampon,strtok(NULL,"#"));
+      if(strcmp(tampon,"pwd") == 0)
+          dialogueErreur("Erreur d'authentification", "Mauvais mot de passe !");
+      if(strcmp(tampon,"username") == 0)
           dialogueErreur("Erreur d'authentification", "Mauvais identifiants !");
-    } else {
-        if (strcmp(messageRecu, "LOGIN#ok") == 0) {
-              loginOK();
-              setPublicite("JEMEPPE");
-              strcpy(messageEnvoye,"");
-              sprintf(messageEnvoye, "CONSULT#1");
-              Echange(messageEnvoye, messageRecu);
-              printf("\nMessage recu : %s\n", messageRecu);
-              
-              ARTICLE a;
-              a = remplirArticle(messageRecu);
-              printf("\nARTICLE : %.2f\n", a.prix);
-              setArticle(a.intitule,a.prix,a.stock,a.image);
-
-              
-
-              dialogueMessage("Authentification réussie", "Vous êtes connecté !");
-        }
     }
-
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -520,7 +529,27 @@ void WindowClient::on_pushButtonViderPanier_clicked()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void WindowClient::on_pushButtonPayer_clicked()
 {
+  char messageRecu[1400];
+  char messageEnvoye[1400];
+  char tmp[50];
 
+
+  sprintf(messageEnvoye, "CONFIRMER#%d",numClient);
+    Echange(messageEnvoye, messageRecu);
+    strcpy(tmp,strtok(messageRecu,"#"));
+    strcpy(tmp,strtok(NULL,"#"));
+
+
+    if(strcmp(tmp,"ok") == 0 )
+    {
+      for(int i = 0 ; i < 20 ; i++)
+      {
+        tabPanierClient[i].id = 0;
+        tabPanierClient[i].prix = 0;
+        tabPanierClient[i].quantite = 0;
+      }
+      majCaddie();
+    }
 }
 
 //***** Fin de connexion ********************************************

@@ -62,6 +62,11 @@ int main(int argc,char *argv[])
   // Répéter le processus pour la table articles
   mysql_query(connexion, "DROP TABLE articles;");
 
+  printf("Creation de la table articlesachete...\n");
+  mysql_query(connexion,"drop table articlesachetes;"); // au cas ou elle existerait deja
+  mysql_query(connexion,"create table articlesachetes (id INT(4) auto_increment primary key, idarticle INT(4),prix FLOAT(4),stock INT(4),idfacture INT);");
+
+
 
   // Creation d'une table UNIX_FINAL
   printf("Creation de la table articles...\n");

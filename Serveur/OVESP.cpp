@@ -48,7 +48,7 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
         }
         else{
             if (SMOP_Login(user,password) == AUTH_SUCCESS){
-                sprintf(reponse,"LOGIN#ok");
+                sprintf(reponse,"LOGIN#ok#%d",getUserIdByUsername(user));
                 ajoute(socket);
             }
             else if(SMOP_Login(user,password) == AUTH_INCORRECT_PASSWORD)
@@ -187,6 +187,29 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
              i++;
             }
         
+
+    }
+    // ***** CONFIRMER ******************************************
+    if(strcmp(ptr,"CONFIRMER") == 0){
+        char date[20]; 
+        int idClient = atoi(strtok(NULL,"#"));  
+        strcpy(date,"2023-10-08"); // Date
+        bool paye= false; // Montant
+        int idFact = 0;
+
+        int ret = insererFacture(idClient,date,paye);
+        if(!ret)
+            strcpy(reponse,"CONFIRMER#ko#ERREUR_SQL#-1#1");
+        else{
+            tuple = getFactureByMaxId();
+            if(!tuple)
+                 strcpy(reponse,"CONFIRMER#ko#ERREUR_SQL#-1");
+            else{
+                idFact = atoi(tuple[0]);
+                
+            }
+        }
+
 
     }
     return true;
