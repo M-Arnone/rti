@@ -313,7 +313,7 @@ void WindowClient::dialogueErreur(const char* titre,const char* message)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void WindowClient::closeEvent(QCloseEvent *event)
 {
-
+  WindowClient::on_pushButtonLogout_clicked();
   exit(0);
 }
 
@@ -361,12 +361,12 @@ void WindowClient::on_pushButtonLogout_clicked()
 {
   char messageRecu[1400];
   char messageEnvoye[1400];
-    
-  strcpy(messageEnvoye, "");
+  
+  WindowClient::on_pushButtonViderPanier_clicked();
+  
   strcpy(messageEnvoye, "LOGOUT#oui");
   Echange(messageEnvoye, messageRecu);
 
-  logoutOK();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
