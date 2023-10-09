@@ -453,7 +453,41 @@ void WindowClient::on_pushButtonAcheter_clicked()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void WindowClient::on_pushButtonSupprimer_clicked()
 {
+  char messageRecu[1400];
+  char messageEnvoye[1400];
+  char tmp[50];
 
+  printf("\ngetIndiceArticleSelectionne() : %d\n",getIndiceArticleSelectionne());
+
+  if(getIndiceArticleSelectionne() == -1) dialogueErreur("Erreur selection", "Aucun article selectionne");
+  else{
+    sprintf(messageEnvoye, "CANCEL#%d",tabPanierClient[getIndiceArticleSelectionne()].id);
+    Echange(messageEnvoye, messageRecu);
+    strcpy(tmp,strtok(messageRecu,"#"));
+    strcpy(tmp,strtok(NULL,"#"));
+    if(strcmp(tmp,"ok") == 0 )
+    {
+      if(numArticle == tabPanierClient[getIndiceArticleSelectionne()].id)
+      {
+        //requete cote bd
+        //requete pour cote client
+        sprintf(messageEnvoye, "CONSULT#%d",numArticle);
+        Echange(messageEnvoye, messageRecu);
+        printf("\nMessage recu : %s\n",messageRecu);
+        ARTICLE a;
+        a = remplirArticle(messageRecu);
+        a.stock+= tabPanierClient[getIndiceArticleSelectionne()].quantite;
+        setArticle(a.intitule,a.prix,a.stock,a.image);
+      }
+
+      tabPanierClient[getIndiceArticleSelectionne()].id = 0;
+      tabPanierClient[getIndiceArticleSelectionne()].prix = 0;
+      tabPanierClient[getIndiceArticleSelectionne()].quantite = 0;
+
+      majCaddie();
+
+    }
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////

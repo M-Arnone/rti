@@ -115,6 +115,39 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
                     
         }
     }
+    // ***** CANCEL ******************************************
+    if (strcmp(ptr,"CANCEL") == 0){
+        int id = atoi(strtok(NULL,"#")),qteDispo,newQte,j;
+        bool ok;
+        
+
+        tuple = getArticleById(id);
+        if(!tuple)
+            sprintf(reponse,"CANCEL#ko#ERREUR_SQL#-1");
+        else{
+             qteDispo = atoi(tuple[3]);
+             newQte = qteDispo + tabPanierServeur[id].quantite;
+             int rep = updateArticleStock(id,newQte);
+             if(!rep)
+                strcpy(reponse,"CANCEL#ko#ERREUR_SQL#-1");
+            else{
+                for(j = 0 , ok = true; j < 20 && ok == true ; j++)
+                {
+                    if(tabPanierServeur[j].id == id)
+                    {
+                        ok = false;
+                        tabPanierServeur[j].id = 0;
+                        tabPanierServeur[j].prix = 0;
+                        tabPanierServeur[j].quantite = 0;
+                        sprintf(reponse,"CANCEL#ok");
+                    }
+                }
+                
+            }
+             
+        }
+        
+    }
 
     return true;
 }
