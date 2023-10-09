@@ -198,37 +198,59 @@ int insererFacture(int idClient, const char* date, int paye) {
 MYSQL_ROW getFactureByMaxId() {
     MYSQL* connexion = ConnexionBD();
 
-    char query[256];
-    snprintf(query, sizeof(query), "SELECT * FROM factures WHERE idfacture = (SELECT MAX(idfacture) FROM factures)");
+    char chaine[256];
+    MYSQL_RES* resultat;
+    MYSQL_ROW Tuple;
+    int idFact = -1; // Par défaut, si aucune facture n'est trouvée, idFact reste à -1
 
-    if (mysql_query(connexion, query) != 0) {
+    snprintf(chaine, sizeof(chaine), "SELECT MAX(id) FROM factures;"); // Utilisez 'id' au lieu de 'idfacture'
+
+    if (mysql_query(connexion, chaine) != 0) {
         fprintf(stderr, "Échec de l'exécution de la requête : %s\n", mysql_error(connexion));
         mysql_close(connexion);
-        exit(1);
+        return NULL;
     }
 
-    MYSQL_RES* result = mysql_store_result(connexion);
-    if (result == NULL) {
+    resultat = mysql_store_result(connexion);
+    if (resultat == NULL) {
         fprintf(stderr, "Échec de la récupération du résultat : %s\n", mysql_error(connexion));
         mysql_close(connexion);
-        exit(1);
+        return NULL;
     }
 
-    int num_rows = mysql_num_rows(result);
-    if (num_rows == 0) {
-        // Aucune facture trouvée, renvoyer une erreur
-        mysql_free_result(result);
-        mysql_close(connexion);
-        fprintf(stderr, "Aucune facture trouvée.\n");
-        return NULL; // Vous pouvez choisir de gérer l'erreur de manière différente si nécessaire
+    Tuple = mysql_fetch_row(resultat);
+
+    if (Tuple != NULL) {
+        idFact = atoi(Tuple[0]);
     }
 
-    // Récupérer les données de la facture
-    MYSQL_ROW row = mysql_fetch_row(result);
-
-    mysql_free_result(result);
+    mysql_free_result(resultat);
     mysql_close(connexion);
 
-    return row;
+    if (idFact == -1) {
+        return NULL; // Aucune facture trouvée
+    } else {
+        MYSQL_ROW row = (MYSQL_ROW)malloc(sizeof(MYSQL_ROW));
+        row[0] = (char*)malloc(10 * sizeof(char)); // Vous pouvez ajuster la taille selon vos besoins
+        snprintf(row[0], 10, "%d", idFact);
+        return row;
+    }
 }
 
+
+int insererArticleAchete(int idarticle, float prix, int stock, int idfacture) {
+    MYSQL* connexion = ConnexionBD();
+
+    char query[256];
+    snprintf(query, sizeof(query), "INSERT INTO articlesachetes (idarticle, prix, stock, idfacture) VALUES (%d, '%.2f', %d, %d)", idarticle, prix, stock, idfacture);
+
+    if (mysql_query(connexion, query) != 0) {
+        fprintf(stderr, "Échec de l'insertion de l'article acheté : %s\n", mysql_error(connexion));
+        mysql_close(connexion);
+        return 0; // Retourne 0 en cas d'erreur
+    } else {
+        printf("Article acheté ajouté avec succès.\n");
+        mysql_close(connexion);
+        return 1; // Retourne 1 en cas de succès
+    }
+}

@@ -196,6 +196,7 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
         strcpy(date,"2023-10-08"); // Date
         bool paye= false; // Montant
         int idFact = 0;
+        bool ok = true;
 
         int ret = insererFacture(idClient,date,paye);
         if(!ret)
@@ -206,7 +207,27 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
                  strcpy(reponse,"CONFIRMER#ko#ERREUR_SQL#-1");
             else{
                 idFact = atoi(tuple[0]);
-                
+                for(int j = 0 ; j < 20 && ok == true ; j++)
+                {
+                    if(tabPanierServeur[j].id != 0)
+                    {
+                        int ret = insererArticleAchete(tabPanierServeur[j].id,tabPanierServeur[j].prix,tabPanierServeur[j].quantite,idFact);
+                        if(!ret){
+                            strcpy(reponse,"CONFIRMER#ko#ERREUR_SQL#-1#3");
+                            ok = false;
+                        }
+                        else
+                        {
+                            printf("\nARTICLE ACHETE\n");
+                            tabPanierServeur[j].id = 0;
+                            tabPanierServeur[j].prix = 0;
+                            tabPanierServeur[j].quantite = 0;
+                            sprintf(reponse,"CONFIRMER#ok");
+                           
+                        }
+                    }
+                }
+                    
             }
         }
 

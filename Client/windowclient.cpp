@@ -338,7 +338,6 @@ void WindowClient::on_pushButtonLogin_clicked()
   strcpy(tampon,strtok(NULL,"#"));
   if(strcmp(tampon,"ok") == 0){
     numClient = atoi(strtok(NULL,"#"));
-    printf("\nNum Client : %d\n",numClient);
 
     loginOK();
     setPublicite("JEMEPPE");
@@ -533,8 +532,7 @@ void WindowClient::on_pushButtonPayer_clicked()
   char messageEnvoye[1400];
   char tmp[50];
 
-
-  sprintf(messageEnvoye, "CONFIRMER#%d",numClient);
+    sprintf(messageEnvoye, "CONFIRMER#%d",numClient);
     Echange(messageEnvoye, messageRecu);
     strcpy(tmp,strtok(messageRecu,"#"));
     strcpy(tmp,strtok(NULL,"#"));
