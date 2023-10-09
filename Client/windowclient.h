@@ -16,6 +16,7 @@ typedef struct
   char  image[20];
 } ARTICLE; 
 
+
 class WindowClient : public QMainWindow
 {
     Q_OBJECT
@@ -50,6 +51,7 @@ public:
     void dialogueErreur(const char *titre, const char *message);
 
     ARTICLE remplirArticle(char *);
+    void majCaddie();
     
 
 private slots:

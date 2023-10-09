@@ -25,5 +25,6 @@ MYSQL * ConnexionBD();
 enum AuthenticationResult authenticateUser(const char *, const char *);
 void addUser(const char *, const char *);
 MYSQL_ROW getArticleById(int articleId);
+int updateArticleStock(int id, int newqte) ;
 
 #endif

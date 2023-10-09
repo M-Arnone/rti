@@ -12,7 +12,7 @@ typedef struct
   int   quantite;  
 } ARTICLEPANIER;
 
-bool SMOP(char* requete, char* reponse,int socket);
+bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *);
 enum AuthenticationResult SMOP_Login(const char* user,const char* password);
 void SMOP_Signup(const char* user,const char* password);
 

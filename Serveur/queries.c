@@ -116,3 +116,21 @@ MYSQL_ROW getArticleById(int articleId) {
 
     return row;
 }
+
+int updateArticleStock(int id, int newqte) {
+    MYSQL *connexion = ConnexionBD();
+
+    char requete[256];
+    snprintf(requete, sizeof(requete), "UPDATE articles SET stock = %d WHERE id = %d", newqte, id);
+
+    if (mysql_query(connexion, requete) != 0) {
+        fprintf(stderr, "Échec de la mise à jour de la quantité : %s\n", mysql_error(connexion));
+        mysql_close(connexion);
+        return 0; // Indique une erreur
+    } else {
+        printf("Quantité mise à jour avec succès.\n");
+        mysql_close(connexion);
+        return 1; // Indique le succès
+    }
+}
+

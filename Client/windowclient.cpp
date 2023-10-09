@@ -26,6 +26,8 @@ int numArticle = 1;
 ARTICLEPANIER tabPanierClient[20];
 
 
+
+
 #define REPERTOIRE_IMAGES "Client/images/"
 
 WindowClient::WindowClient(QWidget *parent) : QMainWindow(parent), ui(new Ui::WindowClient)
@@ -406,10 +408,46 @@ void WindowClient::on_pushButtonAcheter_clicked()
 {
   char messageRecu[1400];
   char messageEnvoye[1400];
+  char *tmp;
+  float prix;
+  bool ok;
+  int j;
   
   sprintf(messageEnvoye, "ACHAT#%d#%d",numArticle,getQuantite());
   Echange(messageEnvoye, messageRecu);
   printf("\nMessage recu : %s\n",messageRecu);
+
+  tmp = strtok(messageRecu, "#");
+  strcpy(tmp,strtok(NULL,"#"));
+
+  if(strcmp(tmp,"ok") == 0 ){
+
+    strcpy(tmp,strtok(NULL,"#"));
+    prix = atof(strtok(NULL,"."));
+    prix = prix + atof(strtok(NULL,"#"))/1000000;
+
+    for (j = 0 ,ok = true; j< 20 && ok == true; j++)
+    {
+      if(tabPanierClient[j].id == 0 || tabPanierClient[j].id == numArticle)
+      {
+        tabPanierClient[j].id = numArticle;
+        strcpy(tabPanierClient[j].intitule,  tmp  );
+        tabPanierClient[j].prix = prix;
+        tabPanierClient[j].quantite = tabPanierClient[j].quantite + getQuantite();
+        printf("id = %d  -  prix = %f - qt = %d\n",tabPanierClient[j].id,tabPanierClient[j].prix,tabPanierClient[j].quantite);     
+        ok = false;
+      }
+    }
+    majCaddie();
+    sprintf(messageEnvoye, "CONSULT#%d",numArticle);
+    Echange(messageEnvoye, messageRecu);
+    printf("\nMessage recu : %s\n",messageRecu);
+    ARTICLE a;
+    a = remplirArticle(messageRecu);
+    setArticle(a.intitule,a.prix,a.stock,a.image);
+
+  }
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -490,4 +528,20 @@ ARTICLE WindowClient::remplirArticle(char* m)
 
     return a;
 
+}
+
+void WindowClient::majCaddie()
+{
+  float total = 0;
+  videTablePanier();
+  for (int j = 0 ; j<20;j++)
+  {
+    if(tabPanierClient[j].id !=0)
+    {
+      ajouteArticleTablePanier(tabPanierClient[j].intitule, tabPanierClient[j].prix, tabPanierClient[j].quantite);
+      total = total + tabPanierClient[j].prix*tabPanierClient[j].quantite;
+    }
+
+  }
+  setTotal(total);
 }

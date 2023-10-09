@@ -45,9 +45,26 @@ int main(int argc,char *argv[])
   MYSQL* connexion = mysql_init(NULL);
   mysql_real_connect(connexion,"localhost","Student","PassStudent1_","PourStudent",0,0,0);
 
+  // Supprimer les contraintes de clé étrangère de la table ventes
+  mysql_query(connexion, "ALTER TABLE ventes DROP FOREIGN KEY idFacture");
+  mysql_query(connexion, "ALTER TABLE ventes DROP FOREIGN KEY idArticle");
+
+  // Supprimer la table ventes
+  mysql_query(connexion, "DROP TABLE ventes;");
+
+  // Répéter le processus pour la table factures
+  mysql_query(connexion, "ALTER TABLE factures DROP FOREIGN KEY idClient");
+  mysql_query(connexion, "DROP TABLE factures;");
+
+  // Répéter le processus pour la table clients
+  mysql_query(connexion, "DROP TABLE clients;");
+
+  // Répéter le processus pour la table articles
+  mysql_query(connexion, "DROP TABLE articles;");
+
+
   // Creation d'une table UNIX_FINAL
   printf("Creation de la table articles...\n");
-  mysql_query(connexion,"drop table IF EXISTS  articles;"); // au cas ou elle existerait deja
   mysql_query(connexion,"create table articles (id INT(4) auto_increment primary key, intitule varchar(20),prix FLOAT(4),stock INT(4),image varchar(20));");
 
   // Ajout de tuples dans la table UNIX_FINAL
@@ -61,23 +78,22 @@ int main(int argc,char *argv[])
 
   //clients -- Id, login, password
   printf("Creation de la table clients...\n");
-  mysql_query(connexion,"drop table IF EXISTS clients;"); // au cas ou elle existerait deja
+
   mysql_query(connexion,"create table clients (id INT(4) auto_increment primary key, login varchar(20),password varchar(20));");
 
   //ajout des tuples clients
   printf("Ajout des clients...\n");
   mysql_query(connexion, "INSERT INTO clients (login, password) VALUES ('wagner', 'abc123');");
   mysql_query(connexion, "INSERT INTO clients (login, password) VALUES ('charlet', 'xyz456');");
+  mysql_query(connexion, "INSERT INTO clients (login, password) VALUES ('w', '1');");
 
 
   // Création de la table factures
   printf("Création de la table factures...\n");
-  mysql_query(connexion, "DROP TABLE IF EXISTS factures;"); // Supprime la table si elle existe déjà
   mysql_query(connexion, "CREATE TABLE factures (id INT(4) AUTO_INCREMENT PRIMARY KEY, idClient INT(4), date DATE, montant FLOAT(4), paye BOOLEAN);");
 
   // Création de la table ventes
   printf("Création de la table ventes...\n");
-  mysql_query(connexion, "DROP TABLE IF EXISTS ventes;"); // Supprime la table si elle existe déjà
   mysql_query(connexion, "CREATE TABLE ventes (idFacture INT(4), idArticle INT(4), quantite INT(4));");
 
   // Ajout de clés étrangères

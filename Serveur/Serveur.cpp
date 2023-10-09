@@ -17,6 +17,8 @@ pthread_cond_t condSocketsAcceptees;
 
 ARTICLEPANIER tabPanierServeur[20];
 
+ARTICLEPANIER *ptabPanierServeur = tabPanierServeur;
+
 
 int main(){
 	// Initialisation socketsAcceptees
@@ -131,7 +133,7 @@ void TraitementConnexion(int sService)
 		requete[nbLus] = 0;
 		printf("\t[THREAD %p] Requete recue = %s\n",(void*)pthread_self(),requete);
 		// ***** Traitement de la requete ***********
-		onContinue = SMOP(requete,reponse,sService);
+		onContinue = SMOP(requete,reponse,sService,ptabPanierServeur);
 		// ***** Envoi de la reponse ****************
 		if ((nbEcrits = Send(sService,reponse,strlen(reponse))) < 0){
 			perror("Erreur de Send");

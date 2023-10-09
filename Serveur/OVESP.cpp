@@ -17,7 +17,7 @@ void retire(int socket);
 pthread_mutex_t mutexClients = PTHREAD_MUTEX_INITIALIZER;
 
 //***** Parsing de la requete et creation de la reponse *************
-bool SMOP(char* requete, char* reponse,int socket)
+bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeur)
 {
     MYSQL_ROW tuple;
     // ***** Récupération nom de la requete *****************
@@ -79,7 +79,41 @@ bool SMOP(char* requete, char* reponse,int socket)
     }
     // ***** ACHAT ******************************************
     if (strcmp(ptr,"ACHAT") == 0){
-        sprintf(reponse,"JEMEPPE");
+        int id = atoi(strtok(NULL,"#"));
+        int qtDemande = atoi(strtok(NULL,"#"));
+        tuple = getArticleById(id);
+        if(!tuple)
+            sprintf(reponse,"ACHAT#ko#-1");
+        else{
+            int qtDispo = atoi(tuple[3]);
+            if (qtDemande > qtDispo)
+                    strcpy(reponse,"ACHAT#ko#Stock_Insufisant#0");
+            else{
+                    int newQt = qtDispo - qtDemande;
+                    int ret = updateArticleStock(id,newQt);
+                    if(ret == 0)
+                         strcpy(reponse,"ACHAT#ko#ERREUR_SQL#-1");
+                    else{
+                            int j;
+                            bool ok;
+
+                            for (j = 0,ok = true; j< 20 && ok == true; j++)
+                            {
+                                if(tabPanierServeur[j].id == 0 || tabPanierServeur[j].id == id)
+                                {
+                                    ok = false;
+                                    tabPanierServeur[j].id = id;
+                                    tabPanierServeur[j].prix = atof(tuple[2]);
+                                    tabPanierServeur[j].quantite = tabPanierServeur[j].quantite + qtDemande;
+                                }
+                            }
+                            
+                            sprintf(reponse,"ACHAT#ok#%s#%f#1",tuple[1],atof(tuple[2]));
+                    }
+
+            }
+                    
+        }
     }
 
     return true;
