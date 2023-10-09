@@ -23,7 +23,6 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
     // ***** Récupération nom de la requete *****************
 
     char *ptr = strtok(requete,"#");
-    printf("\nREQUETE : %s\n",requete);
     // ***** LOGOUT *****************************************
     if (strcmp(ptr,"LOGOUT") == 0)
     {
@@ -70,7 +69,6 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
     }
     // ***** CONSULT ******************************************
     if (strcmp(ptr,"CONSULT") == 0){
-        printf("\n\npassage CONSULT\n\n");
         int numArticle = atoi(strtok(NULL,"#"));
         tuple = getArticleById(numArticle);
         if(!tuple)
@@ -125,21 +123,14 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
         if(!tuple)
             sprintf(reponse,"CANCEL#ko#ERREUR_SQL#-1");
         else{
-             qteDispo = atoi(tuple[3]);
-             for(i = 0 , ok = true; ok == true && i < 20  ; i++)
+            qteDispo = atoi(tuple[3]);
+            for(i = 0 , ok = true; ok == true && i < 20  ; i++)
             {
-                if(tabPanierServeur[i].id == id)
-                {
-                    ok = false;
-                    
-                }
+                if(tabPanierServeur[i].id == id) ok = false;   
             }
             newQte = qteDispo + tabPanierServeur[i-1].quantite;
 
-             printf("\nqteDispo : %d\n",qteDispo);
-             printf("tabPanierServeur[%d].quantite :%d\n\n",id-1,tabPanierServeur[id-1].quantite);
-             printf("tabPanierServeur[%d].quantite :%d\n\n",id,tabPanierServeur[id].quantite);
-             int rep = updateArticleStock(id,newQte);
+            int rep = updateArticleStock(id,newQte);
              if(!rep)
                 strcpy(reponse,"CANCEL#ko#ERREUR_SQL#-1");
             else{

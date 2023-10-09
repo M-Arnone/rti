@@ -363,8 +363,6 @@ void WindowClient::on_pushButtonLogout_clicked()
   strcpy(messageEnvoye, "LOGOUT#oui");
   Echange(messageEnvoye, messageRecu);
 
-  printf("\n\nMessage recu : %s\n\n",messageRecu);
-  
   logoutOK();
 }
 
@@ -415,7 +413,6 @@ void WindowClient::on_pushButtonAcheter_clicked()
   
   sprintf(messageEnvoye, "ACHAT#%d#%d",numArticle,getQuantite());
   Echange(messageEnvoye, messageRecu);
-  printf("\nMessage recu : %s\n",messageRecu);
 
   tmp = strtok(messageRecu, "#");
   strcpy(tmp,strtok(NULL,"#"));
@@ -441,7 +438,6 @@ void WindowClient::on_pushButtonAcheter_clicked()
     majCaddie();
     sprintf(messageEnvoye, "CONSULT#%d",numArticle);
     Echange(messageEnvoye, messageRecu);
-    printf("\nMessage recu : %s\n",messageRecu);
     ARTICLE a;
     a = remplirArticle(messageRecu);
     setArticle(a.intitule,a.prix,a.stock,a.image);
@@ -457,8 +453,6 @@ void WindowClient::on_pushButtonSupprimer_clicked()
   char messageEnvoye[1400];
   char tmp[50];
 
-  printf("\ngetIndiceArticleSelectionne() : %d\n",getIndiceArticleSelectionne());
-
   if(getIndiceArticleSelectionne() == -1) dialogueErreur("Erreur selection", "Aucun article selectionne");
   else{
     sprintf(messageEnvoye, "CANCEL#%d",tabPanierClient[getIndiceArticleSelectionne()].id);
@@ -472,7 +466,6 @@ void WindowClient::on_pushButtonSupprimer_clicked()
         //requete pour cote client
         sprintf(messageEnvoye, "CONSULT#%d",numArticle);
         Echange(messageEnvoye, messageRecu);
-        printf("\nMessage recu : %s\n",messageRecu);
         ARTICLE a;
         a = remplirArticle(messageRecu);
         setArticle(a.intitule,a.prix,a.stock,a.image);
