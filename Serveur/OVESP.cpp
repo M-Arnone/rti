@@ -73,7 +73,7 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
         tuple = getArticleById(numArticle);
         if(!tuple)
             sprintf(reponse,"CONSULT#ko#-1");
-        else sprintf(reponse,"CONSULT#ok#%d#%s#%d#%f#%s",atoi(tuple[0]),tuple[1],atoi(tuple[2]),atof(tuple[3]),tuple[4]);
+        else sprintf(reponse,"CONSULT#ok#%d#%s#%f#%d#%s",atoi(tuple[0]),tuple[1],atof(tuple[2]),atoi(tuple[3]),tuple[4]);//id,intitule,prix,stock,image
     }
     // ***** ACHAT ******************************************
     if (strcmp(ptr,"ACHAT") == 0){

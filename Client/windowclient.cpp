@@ -341,8 +341,11 @@ void WindowClient::on_pushButtonLogin_clicked()
               strcpy(messageEnvoye,"");
               sprintf(messageEnvoye, "CONSULT#1");
               Echange(messageEnvoye, messageRecu);
+              printf("\nMessage recu : %s\n", messageRecu);
+              
               ARTICLE a;
               a = remplirArticle(messageRecu);
+              printf("\nARTICLE : %.2f\n", a.prix);
               setArticle(a.intitule,a.prix,a.stock,a.image);
 
               
@@ -535,7 +538,7 @@ void Echange(char* requete, char* reponse)
 //MES FONCTIONS
 ARTICLE WindowClient::remplirArticle(char* m)
 {
-    ARTICLE a;
+    /*ARTICLE a;
     char* token = strtok(m, "#");
     token = strtok(NULL, "#");
     token = strtok(nullptr, "#");
@@ -544,12 +547,35 @@ ARTICLE WindowClient::remplirArticle(char* m)
     strncpy(a.intitule, token, sizeof(a.intitule) - 1);
     a.intitule[sizeof(a.intitule) - 1] = '\0';
     token = strtok(nullptr, "#");
+
     a.prix = atof(token);
     token = strtok(nullptr, "#");
+    
     a.stock = atoi(token);
     token = strtok(nullptr, "#");
     strncpy(a.image, token, sizeof(a.image) - 1);
     a.image[sizeof(a.image) - 1] = '\0';
+
+    return a;*/
+    ARTICLE a; // Initialisez la structure à zéro pour éviter des valeurs non initialisées
+
+    char* token = strtok(m, "#");
+    token = strtok(NULL, "#");
+    token = strtok(nullptr, "#");
+    a.id = atoi(token);
+
+    token = strtok(NULL, "#");
+    strcpy(a.intitule, token);
+
+    token = strtok(NULL, ".");
+    a.prix = atof(token);
+    a.prix += atof(strtok(NULL,"#"))/1000000; // Arrondir à deux décimales
+
+    token = strtok(NULL, "#");
+    a.stock = atoi(token);
+
+    token = strtok(NULL, "#");
+    strcpy(a.image, token);
 
     return a;
 
