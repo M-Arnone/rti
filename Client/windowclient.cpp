@@ -66,7 +66,7 @@ WindowClient::WindowClient(QWidget *parent) : QMainWindow(parent), ui(new Ui::Wi
     //ici le premier argument (ipServeur) est a NULL donc
     // donc nous sommes en local mais si on veut connecter deux
     // machines distantes on doit rentrer l'ip 
-    //char ip[NI_MAXHOST] = "";
+    //char ip[NI_MAXHOST] = "192.168.1.37";
     sClient = ClientSocket(NULL,5678);
     printf("Connecte sur le serveur.\n");
 
@@ -327,41 +327,44 @@ void WindowClient::on_pushButtonLogin_clicked()
   char messageEnvoye[1400];
   int newClient = 0;
   char tampon[50];
-
-
-  if(isNouveauClientChecked())
-    newClient = 1;
-  sprintf(messageEnvoye, "LOGIN#%s#%s#%d", getNom(), getMotDePasse(),newClient);
-  Echange(messageEnvoye, messageRecu);
-
-  strcpy(tampon,strtok(messageRecu,"#"));
-  strcpy(tampon,strtok(NULL,"#"));
-  if(strcmp(tampon,"ok") == 0){
-    numClient = atoi(strtok(NULL,"#"));
-
-    loginOK();
-    setPublicite("JEMEPPE");
-    strcpy(messageEnvoye,"");
-    sprintf(messageEnvoye, "CONSULT#1");
-    Echange(messageEnvoye, messageRecu);
-    printf("\nMessage recu : %s\n", messageRecu);
-    
-    ARTICLE a;
-    a = remplirArticle(messageRecu);
-    printf("\nARTICLE : %.2f\n", a.prix);
-    setArticle(a.intitule,a.prix,a.stock,a.image);
-
-    dialogueMessage("Authentification réussie", "Vous êtes connecté !");
-  }
+  if(strcmp(getNom(),"") == 0 || strcmp(getMotDePasse(),"") == 0)
+      dialogueErreur("Erreur login","Entrez quelque chose...");
   else{
-    if(strcmp(tampon,"ok") == 0){
+      if(isNouveauClientChecked())
+          newClient = 1;
+      sprintf(messageEnvoye, "LOGIN#%s#%s#%d", getNom(), getMotDePasse(),newClient);
+      Echange(messageEnvoye, messageRecu);
+
+      strcpy(tampon,strtok(messageRecu,"#"));
       strcpy(tampon,strtok(NULL,"#"));
-      if(strcmp(tampon,"pwd") == 0)
-          dialogueErreur("Erreur d'authentification", "Mauvais mot de passe !");
-      if(strcmp(tampon,"username") == 0)
-          dialogueErreur("Erreur d'authentification", "Mauvais identifiants !");
-    }
+      if(strcmp(tampon,"ok") == 0){
+        numClient = atoi(strtok(NULL,"#"));
+
+        loginOK();
+        setPublicite("JEMEPPE");
+        strcpy(messageEnvoye,"");
+        sprintf(messageEnvoye, "CONSULT#1");
+        Echange(messageEnvoye, messageRecu);
+        printf("\nMessage recu : %s\n", messageRecu);
+        
+        ARTICLE a;
+        a = remplirArticle(messageRecu);
+        setArticle(a.intitule,a.prix,a.stock,a.image);
+
+        dialogueMessage("Authentification réussie", "Vous êtes connecté !");
+      }
+      else{
+        if(strcmp(tampon,"ok") == 0){
+          strcpy(tampon,strtok(NULL,"#"));
+          if(strcmp(tampon,"pwd") == 0)
+              dialogueErreur("Erreur d'authentification", "Mauvais mot de passe !");
+          if(strcmp(tampon,"username") == 0)
+              dialogueErreur("Erreur d'authentification", "Mauvais identifiants !");
+        }
+      }
   }
+
+  
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -421,39 +424,46 @@ void WindowClient::on_pushButtonAcheter_clicked()
   float prix;
   bool ok;
   int j;
-  
-  sprintf(messageEnvoye, "ACHAT#%d#%d",numArticle,getQuantite());
-  Echange(messageEnvoye, messageRecu);
 
-  tmp = strtok(messageRecu, "#");
-  strcpy(tmp,strtok(NULL,"#"));
-
-  if(strcmp(tmp,"ok") == 0 ){
-
-    strcpy(tmp,strtok(NULL,"#"));
-    prix = atof(strtok(NULL,"."));
-    prix = prix + atof(strtok(NULL,"#"))/1000000;
-
-    for (j = 0 ,ok = true; j< 20 && ok == true; j++)
-    {
-      if(tabPanierClient[j].id == 0 || tabPanierClient[j].id == numArticle)
-      {
-        tabPanierClient[j].id = numArticle;
-        strcpy(tabPanierClient[j].intitule,  tmp  );
-        tabPanierClient[j].prix = prix;
-        tabPanierClient[j].quantite = tabPanierClient[j].quantite + getQuantite();
-        printf("id = %d  -  prix = %f - qt = %d\n",tabPanierClient[j].id,tabPanierClient[j].prix,tabPanierClient[j].quantite);     
-        ok = false;
-      }
-    }
-    majCaddie();
-    sprintf(messageEnvoye, "CONSULT#%d",numArticle);
-    Echange(messageEnvoye, messageRecu);
-    ARTICLE a;
-    a = remplirArticle(messageRecu);
-    setArticle(a.intitule,a.prix,a.stock,a.image);
-
+  if(getQuantite() == 0){
+    dialogueErreur("Erreur quantite","Veuillez selectionner une quantite");
   }
+  else{
+    sprintf(messageEnvoye, "ACHAT#%d#%d",numArticle,getQuantite());
+    Echange(messageEnvoye, messageRecu);
+
+    tmp = strtok(messageRecu, "#");
+    strcpy(tmp,strtok(NULL,"#"));
+
+    if(strcmp(tmp,"ok") == 0 ){
+
+      strcpy(tmp,strtok(NULL,"#"));
+      prix = atof(strtok(NULL,"."));
+      prix = prix + atof(strtok(NULL,"#"))/1000000;
+
+      for (j = 0 ,ok = true; j< 20 && ok == true; j++)
+      {
+        if(tabPanierClient[j].id == 0 || tabPanierClient[j].id == numArticle)
+        {
+          tabPanierClient[j].id = numArticle;
+          strcpy(tabPanierClient[j].intitule,  tmp  );
+          tabPanierClient[j].prix = prix;
+          tabPanierClient[j].quantite = tabPanierClient[j].quantite + getQuantite();
+          printf("id = %d  -  prix = %f - qt = %d\n",tabPanierClient[j].id,tabPanierClient[j].prix,tabPanierClient[j].quantite);     
+          ok = false;
+        }
+      }
+      majCaddie();
+      sprintf(messageEnvoye, "CONSULT#%d",numArticle);
+      Echange(messageEnvoye, messageRecu);
+      ARTICLE a;
+      a = remplirArticle(messageRecu);
+      setArticle(a.intitule,a.prix,a.stock,a.image);
+
+    }
+  }
+
+  
 
 }
 
@@ -532,6 +542,9 @@ void WindowClient::on_pushButtonPayer_clicked()
   char messageEnvoye[1400];
   char tmp[50];
 
+  if(tabPanierClient[0].id == 0)
+    dialogueErreur("Erreur article panier","Pas d'articles dans le panier..");
+  else{
     sprintf(messageEnvoye, "CONFIRMER#%d",numClient);
     Echange(messageEnvoye, messageRecu);
     strcpy(tmp,strtok(messageRecu,"#"));
@@ -548,6 +561,9 @@ void WindowClient::on_pushButtonPayer_clicked()
       }
       majCaddie();
     }
+  }
+
+    
 }
 
 //***** Fin de connexion ********************************************
