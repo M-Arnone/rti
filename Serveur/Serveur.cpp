@@ -7,10 +7,12 @@ void TraitementConnexion(int sService);
 void* FctThread(void* p);
 int sEcoute;
 // Gestion du pool de threads
-#define NB_THREADS_POOL 2
-#define TAILLE_FILE_ATTENTE 20
-#define PORT_ACHAT 1234
-int socketsAcceptees[TAILLE_FILE_ATTENTE];
+//#define NB_THREADS_POOL 2
+//#define TAILLE_FILE_ATTENTE 20
+//#define PORT_ACHAT 1234
+std::map<std::string, int> config = loadConfig("Serveur/config.txt");
+std::vector<int> socketsAcceptees(config["TAILLE_FILE_ATTENTE"]);
+
 int indiceEcriture=0, indiceLecture=0;
 pthread_mutex_t mutexSocketsAcceptees;
 pthread_cond_t condSocketsAcceptees;
@@ -18,6 +20,13 @@ pthread_cond_t condSocketsAcceptees;
 ARTICLEPANIER tabPanierServeur[20];
 
 ARTICLEPANIER *ptabPanierServeur = tabPanierServeur;
+
+int NB_THREADS_POOL = config["NB_THREADS_POOL"];
+int PORT_ACHAT = config["PORT_ACHAT"];
+int TAILLE_FILE_ATTENTE = config["TAILLE_FILE_ATTENTE"];
+
+
+
 
 
 int main(){

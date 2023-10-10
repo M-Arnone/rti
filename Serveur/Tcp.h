@@ -13,6 +13,10 @@
 #include <cstring>
 #include <stdbool.h> 
 #include <signal.h>
+#include <map>
+#include <sstream>
+#include <fstream>
+#include <vector>
 
 int ServerSocket(int port);
 int Accept(int sEcoute,char *ipClient);
@@ -20,6 +24,7 @@ int ClientSocket(char* ipServeur,int portServeur);
 int Send(int sSocket,char* data,int taille);
 int Receive(int sSocket,char* data);
 
+std::map<std::string, int> loadConfig(const std::string& filename); 
 
 
 

@@ -150,3 +150,29 @@
 		}
 		return i;
 	}
+
+std::map<std::string, int> loadConfig(const std::string& filename) {
+    std::map<std::string, int> configValues;
+    std::ifstream configFile(filename);
+    
+    if (!configFile) {
+        std::cerr << "Unable to open config file: " << filename << std::endl;
+        throw std::runtime_error("Unable to open config file.");
+    }
+    
+    std::string line;
+    while (getline(configFile, line)) {
+        std::istringstream is_line(line);
+        std::string key;
+        if (std::getline(is_line, key, '=')) {
+            std::string value_str;
+            if (std::getline(is_line, value_str)) {
+                int value = stoi(value_str);  // Convert string to int
+                configValues[key] = value;
+            }
+        }
+    }
+
+    configFile.close();
+    return configValues;
+}

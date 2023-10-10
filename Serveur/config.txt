@@ -1,0 +1,4 @@
+// Gestion du pool de threads
+NB_THREADS_POOL=2
+TAILLE_FILE_ATTENTE=20
+PORT_ACHAT=1234
