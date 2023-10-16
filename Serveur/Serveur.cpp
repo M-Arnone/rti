@@ -17,9 +17,7 @@ int indiceEcriture=0, indiceLecture=0;
 pthread_mutex_t mutexSocketsAcceptees;
 pthread_cond_t condSocketsAcceptees;
 
-ARTICLEPANIER tabPanierServeur[20];
 
-ARTICLEPANIER *ptabPanierServeur = tabPanierServeur;
 
 int NB_THREADS_POOL = config["NB_THREADS_POOL"];
 int PORT_ACHAT = config["PORT_ACHAT"];
@@ -90,15 +88,10 @@ int main(){
 void* FctThread(void* p)
 {
 	int sService;
+	
 	while(1)
 	{
-		//mets tous les id a 0
-		for (int i = 0; i < 20; i++)
-        {
-            tabPanierServeur[i].id = 0;
-            tabPanierServeur[i].prix = 0;
-            tabPanierServeur[i].quantite = 0;
-        }
+
         
 		printf("\t[THREAD %p] Attente socket...\n",(void*)pthread_self());
 		
@@ -125,7 +118,17 @@ void TraitementConnexion(int sService)
 	char requete[200], reponse[200];
 	int nbLus, nbEcrits;
 	bool onContinue = true;
+
+	ARTICLEPANIER tabPanierServeur[20];
+	//mets tous les id a 0
+	for (int i = 0; i < 20; i++)
+	{
+		tabPanierServeur[i].id = 0;
+		tabPanierServeur[i].prix = 0;
+		tabPanierServeur[i].quantite = 0;
+	}
 	while (onContinue){
+
 		printf("\t[THREAD %p] Attente requete...\n",(void*)pthread_self());
 		// ***** Reception Requete ******************
 		if ((nbLus = Receive(sService,requete)) < 0){
@@ -142,7 +145,7 @@ void TraitementConnexion(int sService)
 		requete[nbLus] = 0;
 		printf("\t[THREAD %p] Requete recue = %s\n",(void*)pthread_self(),requete);
 		// ***** Traitement de la requete ***********
-		onContinue = SMOP(requete,reponse,sService,ptabPanierServeur);
+		onContinue = SMOP(requete,reponse,sService,tabPanierServeur);
 		// ***** Envoi de la reponse ****************
 		if ((nbEcrits = Send(sService,reponse,strlen(reponse))) < 0){
 			perror("Erreur de Send");
