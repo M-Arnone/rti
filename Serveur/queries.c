@@ -4,7 +4,7 @@ MYSQL* ConnexionBD()
 {
     MYSQL* connexion = mysql_init(NULL);
 
-    if (mysql_real_connect(connexion,"localhost","Student","PassStudent1_","PourStudent",0,0,0) == NULL)
+    if (mysql_real_connect(connexion,"localhost","root","","PourStudent",0,0,0) == NULL)
     {
         fprintf(stderr,"(ACCESBD) Erreur de connexion à la base de données...\n");
         exit(1);  

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <mysql.h>
 #include <time.h>
+#include <mysql.h>
 #include <string.h>
 
 typedef struct
@@ -43,7 +43,7 @@ int main(int argc,char *argv[])
   // Connexion a MySql
   printf("Connexion a la BD...\n");
   MYSQL* connexion = mysql_init(NULL);
-  mysql_real_connect(connexion,"localhost","Student","PassStudent1_","PourStudent",0,0,0);
+  mysql_real_connect(connexion,"localhost","root","","PourStudent",0,0,0);
 
   // Supprimer les contraintes de clé étrangère de la table ventes
   mysql_query(connexion, "ALTER TABLE ventes DROP FOREIGN KEY idFacture");

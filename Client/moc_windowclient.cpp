@@ -31,16 +31,16 @@ struct qt_meta_stringdata_WindowClient_t {
     )
 static const qt_meta_stringdata_WindowClient_t qt_meta_stringdata_WindowClient = {
     {
-QT_MOC_LITERAL(0, 0, 12), // "WindowClient"
-QT_MOC_LITERAL(1, 13, 26), // "on_pushButtonLogin_clicked"
-QT_MOC_LITERAL(2, 40, 0), // ""
-QT_MOC_LITERAL(3, 41, 27), // "on_pushButtonLogout_clicked"
-QT_MOC_LITERAL(4, 69, 30), // "on_pushButtonPrecedent_clicked"
-QT_MOC_LITERAL(5, 100, 28), // "on_pushButtonSuivant_clicked"
-QT_MOC_LITERAL(6, 129, 28), // "on_pushButtonAcheter_clicked"
-QT_MOC_LITERAL(7, 158, 30), // "on_pushButtonSupprimer_clicked"
-QT_MOC_LITERAL(8, 189, 32), // "on_pushButtonViderPanier_clicked"
-QT_MOC_LITERAL(9, 222, 26) // "on_pushButtonPayer_clicked"
+        QT_MOC_LITERAL(0, 0, 12), // "WindowClient"
+        QT_MOC_LITERAL(1, 13, 26), // "on_pushButtonLogin_clicked"
+        QT_MOC_LITERAL(2, 40, 0), // ""
+        QT_MOC_LITERAL(3, 41, 27), // "on_pushButtonLogout_clicked"
+        QT_MOC_LITERAL(4, 69, 30), // "on_pushButtonPrecedent_clicked"
+        QT_MOC_LITERAL(5, 100, 28), // "on_pushButtonSuivant_clicked"
+        QT_MOC_LITERAL(6, 129, 28), // "on_pushButtonAcheter_clicked"
+        QT_MOC_LITERAL(7, 158, 30), // "on_pushButtonSupprimer_clicked"
+        QT_MOC_LITERAL(8, 189, 32), // "on_pushButtonViderPanier_clicked"
+        QT_MOC_LITERAL(9, 222, 26) // "on_pushButtonPayer_clicked"
 
     },
     "WindowClient\0on_pushButtonLogin_clicked\0"

@@ -47,7 +47,7 @@ WindowClient::WindowClient(QWidget *parent) : QMainWindow(parent), ui(new Ui::Wi
     ui->tableWidgetPanier->horizontalHeader()->setDefaultSectionSize(160);
     ui->tableWidgetPanier->horizontalHeader()->setStretchLastSection(true);
     ui->tableWidgetPanier->verticalHeader()->setVisible(false);
-    ui->tableWidgetPanier->horizontalHeader()->setStyleSheet("background-color: lightyellow");
+    ui->tableWidgetPanier->horizontalHeader()->setStyleSheet("background-color: gray");
 
     ui->pushButtonPayer->setText("Confirmer achat");
     setPublicite("!!! Bienvenue sur le Maraicher en ligne !!!");
