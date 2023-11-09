@@ -1,0 +1,13 @@
+./BD/CreationBD.cpp
+./Serveur/Tcp.h
+./Serveur/OVESP.cpp
+./Serveur/queries.c
+./Serveur/Tcp.cpp
+./Serveur/Serveur.cpp
+./Serveur/queries.h
+./Serveur/OVESP.h
+./Client/ui_windowclient.h
+./Client/windowclient.h
+./Client/moc_windowclient.cpp
+./Client/windowclient.cpp
+./Client/mainclient.cpp

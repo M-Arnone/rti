@@ -10,8 +10,6 @@ int main(int argc, char *argv[])
     w = new WindowClient();
     w->show();
     return a.exec();
-
-
 }
 
 

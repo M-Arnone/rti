@@ -4,7 +4,7 @@ MYSQL* ConnexionBD()
 {
     MYSQL* connexion = mysql_init(NULL);
 
-    if (mysql_real_connect(connexion,"localhost","root","","PourStudent",0,0,0) == NULL)
+    if (mysql_real_connect(connexion,"0.0.0.0","root","","PourStudent",0,0,0) == NULL)
     {
         fprintf(stderr,"(ACCESBD) Erreur de connexion à la base de données...\n");
         exit(1);  
@@ -238,11 +238,13 @@ MYSQL_ROW getFactureByMaxId() {
 }
 
 
-int insererArticleAchete(int idarticle, float prix, int stock, int idfacture) {
+int insererArticleAchete(int idarticle, float prix, int quantite, int idfacture) {
     MYSQL* connexion = ConnexionBD();
 
     char query[256];
-    snprintf(query, sizeof(query), "INSERT INTO articlesachetes (idarticle, prix, stock, idfacture) VALUES (%d, '%.2f', %d, %d)", idarticle, prix, stock, idfacture);
+    //snprintf(query, sizeof(query), "INSERT INTO articlesachetes (idarticle, prix, stock, idfacture) VALUES (%d, '%.2f', %d, %d)", idarticle, prix, stock, idfacture);
+    snprintf(query, sizeof(query), "INSERT INTO ventes (idFacture, idArticle, quantite) VALUES (%d, %d, %d)", idfacture, idarticle,quantite);
+
 
     if (mysql_query(connexion, query) != 0) {
         fprintf(stderr, "Échec de l'insertion de l'article acheté : %s\n", mysql_error(connexion));

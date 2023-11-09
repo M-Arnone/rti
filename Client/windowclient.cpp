@@ -363,7 +363,6 @@ void WindowClient::on_pushButtonLogin_clicked()
         }
       }
   }
-
   
 }
 
@@ -430,6 +429,7 @@ void WindowClient::on_pushButtonAcheter_clicked()
   }
   else{
     sprintf(messageEnvoye, "ACHAT#%d#%d",numArticle,getQuantite());
+    printf("\nMessage envoye : %s\n", messageEnvoye);
     Echange(messageEnvoye, messageRecu);
 
     tmp = strtok(messageRecu, "#");
