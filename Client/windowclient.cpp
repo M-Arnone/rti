@@ -436,6 +436,7 @@ void WindowClient::on_pushButtonAcheter_clicked()
     strcpy(tmp,strtok(NULL,"#"));
 
     if(strcmp(tmp,"ok") == 0 ){
+      printf("message recu : %s\n",messageRecu);
 
       strcpy(tmp,strtok(NULL,"#"));
       prix = atof(strtok(NULL,"."));

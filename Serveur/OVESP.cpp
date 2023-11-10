@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <sys/socket.h>
 
+#define NBARTICLE 21
 
 //***** Etat du protocole : liste des clients loggés ****************
 int clients[NB_MAX_CLIENTS];
@@ -19,7 +20,7 @@ pthread_mutex_t mutexClients = PTHREAD_MUTEX_INITIALIZER;
 //***** Parsing de la requete et creation de la reponse *************
 bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeur)
 {
-    MYSQL_ROW tuple;
+    
     // ***** Récupération nom de la requete *****************
 
     char *ptr = strtok(requete,"#");
@@ -70,7 +71,7 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
     // ***** CONSULT ******************************************
     if (strcmp(ptr,"CONSULT") == 0){
         int numArticle = atoi(strtok(NULL,"#"));
-        tuple = getArticleById(numArticle);
+        MYSQL_ROW tuple = getArticleById(numArticle);
         if(!tuple)
             sprintf(reponse,"CONSULT#ko#-1");
         else sprintf(reponse,"CONSULT#ok#%d#%s#%f#%d#%s",atoi(tuple[0]),tuple[1],atof(tuple[2]),atoi(tuple[3]),tuple[4]);//id,intitule,prix,stock,image
@@ -79,10 +80,22 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
     if (strcmp(ptr,"ACHAT") == 0){
         int id = atoi(strtok(NULL,"#"));
         int qtDemande = atoi(strtok(NULL,"#"));
-        tuple = getArticleById(id);
+        MYSQL_ROW tuple = getArticleById(id);
         if(!tuple)
             sprintf(reponse,"ACHAT#ko#-1");
         else{
+
+            // Extract and print the fields from the tuple
+            int articleId = atoi(tuple[0]);
+            const char *articleName = tuple[1];
+            double articlePrice = atof(tuple[2]);
+            int articleStock = atoi(tuple[3]);
+
+            printf("Article ID: %d\n", articleId);
+            printf("Article Name: %s\n", articleName);
+            printf("Article Price: %.2f\n", articlePrice);
+            printf("Article Stock: %d\n", articleStock);
+
             int qtDispo = atoi(tuple[3]);
             if (qtDemande > qtDispo)
                     strcpy(reponse,"ACHAT#ko#Stock_Insufisant#0");
@@ -92,21 +105,32 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
                     if(ret == 0)
                          strcpy(reponse,"ACHAT#ko#ERREUR_SQL#-1");
                     else{
-                            int j;
-                            bool ok;
-
-                            for (j = 0,ok = true; j< 20 && ok == true; j++)
+                            int j = 0;
+                            bool ok = true;
+                            printf("PASSAGE\n");
+                            for (j = 0,ok = true; j < NBARTICLE && ok == true; j++)
                             {
+                                printf("id : %d\n",id);
+                                printf("atof(tuple[2]) : %f\n",atof(tuple[2]));
+                                // des qu'il y a un emplacement vide ou qu'il croise l'id qu'il a
                                 if(tabPanierServeur[j].id == 0 || tabPanierServeur[j].id == id)
                                 {
                                     ok = false;
                                     tabPanierServeur[j].id = id;
-                                    tabPanierServeur[j].prix = atof(tuple[2]);
+                                    tabPanierServeur[j].prix = articlePrice;
                                     tabPanierServeur[j].quantite = tabPanierServeur[j].quantite + qtDemande;
                                 }
                             }
-                            
+                            printf("f : %f\n",atof(tuple[2]));
+                            printf(".2f : %.2f\n",atof(tuple[2]));
+                            printf(".2lf : %.2lf\n",atof(tuple[2]));
                             sprintf(reponse,"ACHAT#ok#%s#%f#1",tuple[1],atof(tuple[2]));
+                            // strcpy(reponse,"ACHAT#ok");
+                            // strcat(reponse,"#");
+                            // strcat(reponse,tuple[1]);
+                            // strcat(reponse,"#");
+                            // strcat(reponse,tuple[2]);
+                            // strcat(reponse,"#1");
                     }
 
             }
@@ -118,13 +142,14 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
         int id = atoi(strtok(NULL,"#")),qteDispo,newQte,j;
         bool ok;
         int i;
+        MYSQL_ROW tuple;
 
         tuple = getArticleById(id);
         if(!tuple)
             sprintf(reponse,"CANCEL#ko#ERREUR_SQL#-1");
         else{
             qteDispo = atoi(tuple[3]);
-            for(i = 0 , ok = true; ok == true && i < 20  ; i++)
+            for(i = 0 , ok = true; ok == true && i < NBARTICLE  ; i++)
             {
                 if(tabPanierServeur[i].id == id) ok = false;   
             }
@@ -134,7 +159,7 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
              if(!rep)
                 strcpy(reponse,"CANCEL#ko#ERREUR_SQL#-1");
             else{
-                for(j = 0 , ok = true; j < 20 && ok == true ; j++)
+                for(j = 0 , ok = true; j < NBARTICLE && ok == true ; j++)
                 {
                     if(tabPanierServeur[j].id == id)
                     {
@@ -155,6 +180,7 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
     if (strcmp(ptr,"CANCELALL") == 0){
         bool ok;
         int qteDispo,newQte,k,i=0;
+        MYSQL_ROW tuple;
         while(tabPanierServeur[i].id != 0){
 
             int id = tabPanierServeur[i].id;
@@ -164,7 +190,7 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
             else{
 
                 qteDispo = atoi(tuple[3]);
-                for(k = 0 , ok = true; ok == true && k < 20  ; k++)
+                for(k = 0 , ok = true; ok == true && k < NBARTICLE  ; k++)
                 {
                     if(tabPanierServeur[k].id == id) ok = false;   
                 }
@@ -198,6 +224,8 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
         int idFact = 0;
         bool ok = true;
 
+        MYSQL_ROW tuple;
+
         int ret = insererFacture(idClient,date,paye);
         if(!ret)
             strcpy(reponse,"CONFIRMER#ko#ERREUR_SQL#-1#1");
@@ -207,11 +235,11 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
                  strcpy(reponse,"CONFIRMER#ko#ERREUR_SQL#-1");
             else{
                 idFact = atoi(tuple[0]);
-                for(int j = 0 ; j < 20 && ok == true ; j++)
+                for(int j = 0 ; j < NBARTICLE && ok == true ; j++)
                 {
                     if(tabPanierServeur[j].id != 0)
                     {
-                        int ret = insererArticleAchete(tabPanierServeur[j].id,tabPanierServeur[j].prix,tabPanierServeur[j].quantite,idFact);
+                        int ret = insererArticleAchete(idFact,tabPanierServeur[j].id,tabPanierServeur[j].quantite);
                         if(!ret){
                             strcpy(reponse,"CONFIRMER#ko#ERREUR_SQL#-1#3");
                             ok = false;

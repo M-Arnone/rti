@@ -62,9 +62,6 @@ int main(int argc,char *argv[])
   // Répéter le processus pour la table articles
   mysql_query(connexion, "DROP TABLE articles;");
 
-  
-
-
   // Creation d'une table UNIX_FINAL
   printf("Creation de la table articles...\n");
   mysql_query(connexion,"create table articles (id INT(4) auto_increment primary key, intitule varchar(20),prix FLOAT(4),stock INT(4),image varchar(20));");
@@ -74,7 +71,7 @@ int main(int argc,char *argv[])
   char requete[256];
   for (int i=0 ; i<21 ; i++)
   {
-	  sprintf(requete,"insert into articles values (NULL,'%s',%f,%d,'%s');",Elm[i].intitule,Elm[i].prix,Elm[i].stock,Elm[i].image);
+	  snprintf(requete,256,"insert into articles values (NULL,'%s',%f,%d,'%s');",Elm[i].intitule,Elm[i].prix,Elm[i].stock,Elm[i].image);
 	  mysql_query(connexion,requete);
   }
 
@@ -92,7 +89,7 @@ int main(int argc,char *argv[])
 
   // Création de la table factures
   printf("Création de la table factures...\n");
-  mysql_query(connexion, "CREATE TABLE factures (id INT(4) AUTO_INCREMENT PRIMARY KEY, idClient INT(4), date DATE, montant FLOAT(4), paye BOOLEAN);");
+  mysql_query(connexion, "CREATE TABLE factures (id INT(4) AUTO_INCREMENT PRIMARY KEY, idClient INT(4), date DATE, paye BOOLEAN);");
 
   // Création de la table ventes
   printf("Création de la table ventes...\n");

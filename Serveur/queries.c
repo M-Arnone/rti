@@ -85,7 +85,6 @@ MYSQL_ROW getArticleById(int articleId) {
 
     char query[256];
     snprintf(query, sizeof(query), "SELECT * FROM articles WHERE id = %d", articleId);
-
     if (mysql_query(connexion, query) != 0) {
         fprintf(stderr, "Échec de l'exécution de la requête : %s\n", mysql_error(connexion));
         mysql_close(connexion);
@@ -119,10 +118,8 @@ MYSQL_ROW getArticleById(int articleId) {
 
 int updateArticleStock(int id, int newqte) {
     MYSQL *connexion = ConnexionBD();
-
     char requete[256];
     snprintf(requete, sizeof(requete), "UPDATE articles SET stock = %d WHERE id = %d", newqte, id);
-
     if (mysql_query(connexion, requete) != 0) {
         fprintf(stderr, "Échec de la mise à jour de la quantité : %s\n", mysql_error(connexion));
         mysql_close(connexion);
@@ -174,7 +171,7 @@ int getUserIdByUsername(const char *username) {
 
     return userId;
 }
-int insererFacture(int idClient, const char* date, int paye) {
+int insererFacture(int idClient,const char* date, int paye) {
     MYSQL* connexion = ConnexionBD();
 
     // Échapper les caractères spéciaux dans la date
@@ -238,7 +235,7 @@ MYSQL_ROW getFactureByMaxId() {
 }
 
 
-int insererArticleAchete(int idarticle, float prix, int quantite, int idfacture) {
+int insererArticleAchete(int idfacture,int idarticle, int quantite) {
     MYSQL* connexion = ConnexionBD();
 
     char query[256];

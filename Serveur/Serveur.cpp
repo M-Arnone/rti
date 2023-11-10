@@ -10,6 +10,7 @@ int sEcoute;
 //#define NB_THREADS_POOL 2
 //#define TAILLE_FILE_ATTENTE 20
 //#define PORT_ACHAT 1234
+#define NBARTICLE 21
 std::map<std::string, int> config = loadConfig("Serveur/config.txt");
 std::vector<int> socketsAcceptees(config["TAILLE_FILE_ATTENTE"]);
 
@@ -119,9 +120,9 @@ void TraitementConnexion(int sService)
 	int nbLus, nbEcrits;
 	bool onContinue = true;
 
-	ARTICLEPANIER tabPanierServeur[20];
+	ARTICLEPANIER tabPanierServeur[NBARTICLE];
 	//mets tous les id a 0
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < NBARTICLE; i++)
 	{
 		tabPanierServeur[i].id = 0;
 		tabPanierServeur[i].prix = 0;
@@ -154,7 +155,7 @@ void TraitementConnexion(int sService)
 		}
 		printf("\t[THREAD %p] Reponse envoyee = %s\n",(void*)pthread_self(),reponse);
 		printf("\t[THREAD %ld] - Mon panier :\n",pthread_self());
-        for(int k = 0 ; k < 20 ; k++)
+        for(int k = 0 ; k < NBARTICLE ; k++)
         {
 			printf("\tid : %d  - qt :  %d\n",tabPanierServeur[k].id, tabPanierServeur[k].quantite);
         }
