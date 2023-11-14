@@ -12,12 +12,22 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class Controler implements ActionListener, WindowListener {
+    Model m = Model.getInstance();
     private ClientAchatGUI _cag = new ClientAchatGUI("Acceuil");
-    public Controler(ClientAchatGUI cag){_cag = cag;}
-    public Controler(){}
+    public Controler(ClientAchatGUI cag) throws SQLException, IOException, ClassNotFoundException {_cag = cag;}
+    public Controler() throws SQLException, IOException, ClassNotFoundException {}
     @Override
     public void actionPerformed(ActionEvent e) {
-        Controler c = new Controler();
+
+        try {
+            Controler c = new Controler();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        } catch (ClassNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
         if(e.getSource() == _cag.getLoginButton()){
             try {
                 String nom = _cag.getTextFieldNom().getText();
@@ -25,17 +35,19 @@ public class Controler implements ActionListener, WindowListener {
                 if(nom.isEmpty() || pwd.isEmpty())
                     JOptionPane.showMessageDialog(null, "Les champs de texte doivent être remplis.", "Erreur", JOptionPane.ERROR_MESSAGE);
                 else{
-                    Model m = Model.getInstance();
                     boolean newClient = false;
                     if(_cag.getNouveauClientCheckBox().isSelected())
                         newClient = true;
-                    m.setLogin(nom,pwd,newClient);
+                    m.on_pushLogin(nom,pwd,newClient);
                 }
 
-            } catch (SQLException ex) {
+            } catch (IOException ex) {
                 throw new RuntimeException(ex);
-            } catch (ClassNotFoundException ex) {
-                throw new RuntimeException(ex);
+            }
+        }
+        if(e.getSource() == _cag.getLogoutButton()){
+            try {
+                m.on_pushLogout();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }

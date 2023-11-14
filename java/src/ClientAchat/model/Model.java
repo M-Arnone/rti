@@ -26,15 +26,16 @@ public class Model  {
     }
 
 
-    public int setLogin(String nom, String pwd,boolean newClient) throws IOException {
+    public void on_pushLogin(String nom, String pwd,boolean newClient) throws IOException {
         if(newClient)
             setRequete("LOGIN#" + nom + "#" + pwd + "#1");
         else setRequete("LOGIN#" + nom + "#" + pwd + "#0");
         System.out.println("req :" + getRequete());
         Echange(getRequete());
-
-
-        return 0;
+    }
+    public void on_pushLogout() throws IOException {
+        setRequete("LOGOUT#oui");
+        Echange(getRequete());
     }
 
 
