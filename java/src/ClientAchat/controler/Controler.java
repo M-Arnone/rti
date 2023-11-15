@@ -1,5 +1,6 @@
 package ClientAchat.controler;
 
+import ClientAchat.model.Article;
 import ClientAchat.model.Model;
 import ClientAchat.view.ClientAchatGUI;
 
@@ -19,15 +20,7 @@ public class Controler implements ActionListener, WindowListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        try {
-            Controler c = new Controler();
-        } catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (ClassNotFoundException ex) {
-            throw new RuntimeException(ex);
-        }
+        //LOGIN
         if(e.getSource() == _cag.getLoginButton()){
             try {
                 String nom = _cag.getTextFieldNom().getText();
@@ -39,12 +32,21 @@ public class Controler implements ActionListener, WindowListener {
                     if(_cag.getNouveauClientCheckBox().isSelected())
                         newClient = true;
                     m.on_pushLogin(nom,pwd,newClient);
+                    Article a;
+                    if((a = m.setArticle(1)) == null ){
+                        System.out.println("ERREUR");
+                    }
+                    _cag.setImage(a.getImg());
+                    _cag.setTextFieldArticle(a.getNom());
+                    _cag.setTextFieldPrix(a.getPrix());
+                    _cag.setTextFieldStock(a.getQuantite());
                 }
 
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
         }
+        //LOGOUT
         if(e.getSource() == _cag.getLogoutButton()){
             try {
                 m.on_pushLogout();
@@ -52,6 +54,8 @@ public class Controler implements ActionListener, WindowListener {
                 throw new RuntimeException(ex);
             }
         }
+        //revalide();
+        //repaint();
     }
 
     @Override

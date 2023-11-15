@@ -57,10 +57,6 @@ public class ClientAchatGUI extends JFrame {
     }
 
     private JCheckBox nouveauClientCheckBox;
-    private JTextField textField3;
-    private JTextField textField4;
-    private JTextField textField5;
-    private JSpinner spinner1;
     private JButton acheterButton;
     private JButton precedentButton;
     private JButton suivantButton;
@@ -70,6 +66,45 @@ public class ClientAchatGUI extends JFrame {
     private JButton confirmerLAchatButton;
     private JTextField textField6;
     private JPanel panelPrincipal;
+    private JTextField textFieldArticle;
+    private JTextField textFieldPrix;
+    private JTextField textFieldStock;
+
+    public JTextField getTextFieldArticle() {
+        return textFieldArticle;
+    }
+
+    public void setTextFieldArticle(String s) {
+        this.textFieldArticle.setText(s);
+    }
+
+    public JTextField getTextFieldPrix() {
+        return textFieldPrix;
+    }
+
+    public void setTextFieldPrix(Double s) {
+        String text = String.valueOf(s);
+        this.textFieldPrix.setText(text);
+    }
+
+    public JTextField getTextFieldStock() {
+        return textFieldStock;
+    }
+
+    public void setTextFieldStock(Integer s) {
+        String text = String.valueOf(s);
+        this.textFieldStock.setText(text);
+    }
+
+    private JSpinner spinnerQuantite;
+
+    public void setImage(String s) {
+        s = "img/"+s;
+        ImageIcon nouvelleImageIcon = new ImageIcon(s);
+        image.setIcon(nouvelleImageIcon);
+    }
+
+    private JLabel image;
 
     public void setControler(Controler c){
         getLoginButton().addActionListener(c);
@@ -87,10 +122,10 @@ public class ClientAchatGUI extends JFrame {
         super(nom);
         setContentPane(panelPrincipal);
         pack();
-
     }
 
     public static void main(String[] args) {
         ClientAchatGUI cag = new ClientAchatGUI("Accueil");
+        cag.setVisible(true);
     }
 }

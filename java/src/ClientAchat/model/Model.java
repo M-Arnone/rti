@@ -16,6 +16,7 @@ public class Model  {
     private Socket sClient;
     private String _requete;
     private ConfigProperties cg;
+    int numArticle = 1;
 
     public String getRequete() {
         return _requete;
@@ -30,23 +31,49 @@ public class Model  {
         if(newClient)
             setRequete("LOGIN#" + nom + "#" + pwd + "#1");
         else setRequete("LOGIN#" + nom + "#" + pwd + "#0");
-        System.out.println("req :" + getRequete());
         Echange(getRequete());
+        setArticle(numArticle);
     }
     public void on_pushLogout() throws IOException {
         setRequete("LOGOUT#oui");
         Echange(getRequete());
     }
 
+    public Article setArticle(int num) throws IOException {
+        String reponse = null;
+        Article a = null;
+        setRequete("CONSULT#"+num);
+        try{
+            reponse=Echange(getRequete());
+        }catch (IOException ex){
+            System.err.println("Erreur d'Echange - Consult : " + ex.getMessage());
+        }
+        String[] infos = reponse.split("#");
 
-    private void Echange(String requete) throws IOException {
+        if (infos.length >= 7) {
+
+            String nomArticle = infos[3];
+            double prix = Double.parseDouble(infos[4]);
+            int quantite = Integer.parseInt(infos[5]);
+            String nomFichierImage = infos[6];
+
+            a = new Article(nomArticle,prix,quantite,nomFichierImage);
+
+        } else {
+            System.err.println("Réponse mal formée");
+        }
+        return a;
+
+    }
+
+
+    private String Echange(String requete) throws IOException {
         // Envoie de la requête
         try {
             Send(requete);
         } catch (IOException e) {
             System.err.println("Erreur de Send : " + e.getMessage());
             sClient.close();
-            return;
         }
 
         // Recevoir la réponse
@@ -58,7 +85,7 @@ public class Model  {
             sClient.close();
             throw e;
         }
-        System.out.println("Reponse :" + reponse);
+        return reponse;
     }
 
 
@@ -78,7 +105,7 @@ public class Model  {
         byte lastByte = 0;
 
         while (!finished) {
-            int byteRead = dis.read(); // Lit un byte
+            int byteRead = dis.read();
             if (byteRead == -1) {
                 throw new IOException("Erreur de lecture - Connection fermée ou autre erreur.");
             }
