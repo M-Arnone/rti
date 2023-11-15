@@ -1,6 +1,7 @@
 package ClientAchat.model;
 
 import javax.sound.midi.Receiver;
+import javax.swing.*;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -39,31 +40,18 @@ public class Model  {
         Echange(getRequete());
     }
 
-    public Article setArticle(int num) throws IOException {
-        String reponse = null;
-        Article a = null;
-        setRequete("CONSULT#"+num);
-        try{
-            reponse=Echange(getRequete());
-        }catch (IOException ex){
-            System.err.println("Erreur d'Echange - Consult : " + ex.getMessage());
+    public Article on_pushSuivant() throws IOException {
+        if(numArticle+1>21){
+            JOptionPane.showMessageDialog(null, "Plus d'articles", "Erreur", JOptionPane.ERROR_MESSAGE);
         }
-        String[] infos = reponse.split("#");
-
-        if (infos.length >= 7) {
-
-            String nomArticle = infos[3];
-            double prix = Double.parseDouble(infos[4]);
-            int quantite = Integer.parseInt(infos[5]);
-            String nomFichierImage = infos[6];
-
-            a = new Article(nomArticle,prix,quantite,nomFichierImage);
-
-        } else {
-            System.err.println("Réponse mal formée");
-        }
-        return a;
-
+        else numArticle++;
+        return setArticle(numArticle);
+    }
+    public Article on_pushPrecedent() throws IOException{
+        if(numArticle-1 < 1)
+            JOptionPane.showMessageDialog(null, "Plus d'articles", "Erreur", JOptionPane.ERROR_MESSAGE);
+        else numArticle--;
+        return setArticle(numArticle);
     }
 
 
@@ -125,12 +113,43 @@ public class Model  {
     }
 
     public void connectToServer() throws IOException{
-        ConfigProperties cg = new ConfigProperties();
-         sClient = new Socket(cg.getServeurIP(),cg.getServeurPort());
-         dos = new DataOutputStream(sClient.getOutputStream());
-         dis = new DataInputStream(sClient.getInputStream());
-    }
+        try{
+            ConfigProperties cg = new ConfigProperties();
+            sClient = new Socket(cg.getServeurIP(),cg.getServeurPort());
+            dos = new DataOutputStream(sClient.getOutputStream());
+            dis = new DataInputStream(sClient.getInputStream());
+        }catch (IOException e){
+            System.out.println("Erreur : " +e);
+            throw e;
+        }
 
+    }
+    public Article setArticle(int num) throws IOException {
+        String reponse = null;
+        Article a = null;
+        setRequete("CONSULT#"+num);
+        try{
+            reponse=Echange(getRequete());
+        }catch (IOException ex){
+            System.err.println("Erreur d'Echange - Consult : " + ex.getMessage());
+        }
+        String[] infos = reponse.split("#");
+
+        if (infos.length >= 7) {
+
+            String nomArticle = infos[3];
+            double prix = Double.parseDouble(infos[4]);
+            int quantite = Integer.parseInt(infos[5]);
+            String nomFichierImage = infos[6];
+
+            a = new Article(nomArticle,prix,quantite,nomFichierImage);
+
+        } else {
+            System.err.println("Réponse mal formée");
+        }
+        return a;
+
+    }
     public static Model getInstance() throws SQLException, ClassNotFoundException, IOException {
         if(instance == null){
             synchronized (Model.class){
@@ -142,7 +161,7 @@ public class Model  {
         return instance;
     }
     public Model() throws IOException {
-        connectToServer();
+            connectToServer();
     }
 
 

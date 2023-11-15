@@ -18,12 +18,9 @@ public class Main {
             Controler c = new Controler(cag);
             cag.setControler(c);
             cag.setVisible(true);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (SQLException | IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+
     }
 }

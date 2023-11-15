@@ -54,8 +54,35 @@ public class Controler implements ActionListener, WindowListener {
                 throw new RuntimeException(ex);
             }
         }
-        //revalide();
-        //repaint();
+        //SUIVANT
+        if(e.getSource() == _cag.getSuivantButton())
+        {
+            System.out.println("SUIVANT");
+            try {
+               Article a = m.on_pushSuivant();
+                _cag.setImage(a.getImg());
+                _cag.setTextFieldArticle(a.getNom());
+                _cag.setTextFieldPrix(a.getPrix());
+                _cag.setTextFieldStock(a.getQuantite());
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        //PRECEDENT
+        if(e.getSource() == _cag.getPrecedentButton())
+        {
+            try {
+                Article a = m.on_pushPrecedent();
+                _cag.setImage(a.getImg());
+                _cag.setTextFieldArticle(a.getNom());
+                _cag.setTextFieldPrix(a.getPrix());
+                _cag.setTextFieldStock(a.getQuantite());
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+       _cag.revalidate();
+       _cag.repaint();
     }
 
     @Override
