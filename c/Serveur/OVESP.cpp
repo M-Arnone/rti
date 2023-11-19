@@ -71,39 +71,50 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
     // ***** CONSULT ******************************************
     if (strcmp(ptr,"CONSULT") == 0){
         int numArticle = atoi(strtok(NULL,"#"));
-        MYSQL_ROW tuple = getArticleById(numArticle);
-        if(!tuple)
+        Article *a = getArticleById(numArticle);
+        if(!a)
             sprintf(reponse,"CONSULT#ko#-1");
-        else sprintf(reponse,"CONSULT#ok#%d#%s#%f#%d#%s",atoi(tuple[0]),tuple[1],atof(tuple[2]),atoi(tuple[3]),tuple[4]);//id,intitule,prix,stock,image
+        else sprintf(reponse,"CONSULT#ok#%d#%s#%f#%d#%s",a->id,a->intitule,a->prix,a->stock,a->img);//id,intitule,prix,stock,image
+        free(a->intitule); // Libérer le champ intitule
+        free(a); 
     }
     // ***** ACHAT ******************************************
     if (strcmp(ptr,"ACHAT") == 0){
         int id = atoi(strtok(NULL,"#"));
         int qtDemande = atoi(strtok(NULL,"#"));
-        MYSQL_ROW tuple = getArticleById(id);
-        if(!tuple)
+        Article *a = getArticleById(id);
+        if(!a)
             sprintf(reponse,"ACHAT#ko#-1");
         else{
 
             // Extract and print the fields from the tuple
-            int articleId = atoi(tuple[0]);
-            const char *articleName = tuple[1];
-            double articlePrice = atof(tuple[2]);
-            int articleStock = atoi(tuple[3]);
+            int articleId = a->id;
+            const char *articleName = a->intitule;
+            double articlePrice = a->prix;
+            int articleStock = a->stock;
 
-            int qtDispo = atoi(tuple[3]);
+            printf("articleid : %d\n",articleId);
+            printf("articleNme : %s\n",articleName);
+            printf("articlePrice : %lf\n", articlePrice);
+            printf("articleStock: %d\n", articleStock);
+
+            int qtDispo = a->stock;
             if (qtDemande > qtDispo)
                     strcpy(reponse,"ACHAT#ko#Stock_Insufisant#0");
             else{
                     int newQt = qtDispo - qtDemande;
+                    printf("uWu\n");
                     int ret = updateArticleStock(id,newQt);
+                    printf("NONNOOOON\n");
                     if(ret == 0)
                          strcpy(reponse,"ACHAT#ko#ERREUR_SQL#-1");
                     else{
                             int j = 0;
                             bool ok = true;
+                            printf("BANGERWREWRERWW\n");
                             for (j = 0,ok = true; j < NBARTICLE && ok == true; j++)
                             {
+                                printf("juuwwwwi : %d\n",j);
                                 // des qu'il y a un emplacement vide ou qu'il croise l'id qu'il a
                                 if(tabPanierServeur[j].id == 0 || tabPanierServeur[j].id == id)
                                 {
@@ -113,11 +124,17 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
                                     tabPanierServeur[j].quantite = tabPanierServeur[j].quantite + qtDemande;
                                 }
                             }
-                            sprintf(reponse,"ACHAT#ok#%s#%f#1",tuple[1],atof(tuple[2]));
+                            printf("AVANT sprintf\n");
+                            strcpy(reponse,"");
+                            printf("reponse : %s\n",reponse);
+                            sprintf(reponse,"ACHAT#ok#%s#%lf#1",articleName,articlePrice);
+                            printf("reponse - apres sprintf -  : %s\n",reponse);
+                            printf("apres sprintf\n");
                     }
 
             }
-                    
+        free(a->intitule); // Libérer le champ intitule
+        free(a);          
         }
     }
     // ***** CANCEL ******************************************
@@ -125,13 +142,11 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
         int id = atoi(strtok(NULL,"#")),qteDispo,newQte,j;
         bool ok;
         int i;
-        MYSQL_ROW tuple;
-
-        tuple = getArticleById(id);
-        if(!tuple)
+        Article *a =getArticleById(id);
+        if(!a)
             sprintf(reponse,"CANCEL#ko#ERREUR_SQL#-1");
         else{
-            qteDispo = atoi(tuple[3]);
+            qteDispo = a->stock;
             for(i = 0 , ok = true; ok == true && i < NBARTICLE  ; i++)
             {
                 if(tabPanierServeur[i].id == id) ok = false;   
@@ -155,7 +170,8 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
                 }
                 
             }
-             
+            free(a->intitule); // Libérer le champ intitule
+            free(a);    
         }
         
     }
@@ -163,16 +179,16 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
     if (strcmp(ptr,"CANCELALL") == 0){
         bool ok;
         int qteDispo,newQte,k,i=0;
-        MYSQL_ROW tuple;
+        Article *a;
         while(tabPanierServeur[i].id != 0){
 
             int id = tabPanierServeur[i].id;
-            tuple = getArticleById(id);
-            if(!tuple)
+            a = getArticleById(id);
+            if(!a)
             sprintf(reponse,"CANCELALL#ko#ERREUR_SQL#-1");
             else{
 
-                qteDispo = atoi(tuple[3]);
+                qteDispo = a->stock;
                 for(k = 0 , ok = true; ok == true && k < NBARTICLE  ; k++)
                 {
                     if(tabPanierServeur[k].id == id) ok = false;   
@@ -191,6 +207,8 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
                         sprintf(reponse,"CANCELALL#ok");
                         
                     }
+                free(a->intitule); // Libérer le champ intitule
+                free(a); 
                 
             }
              i++;
@@ -308,4 +326,5 @@ void SMOP_Close()
     for (int i=0 ; i<nbClients ; i++)
         shutdown(clients[i],SHUT_RDWR);
     pthread_mutex_unlock(&mutexClients);
+
 }

@@ -21,10 +21,20 @@ enum AuthenticationResult {
     AUTH_USERNAME_NOT_FOUND  // Nom d'utilisateur introuvable
 };
 
+typedef struct {
+    int id;
+    char *intitule; // Pour le nom de l'article
+    float prix;
+    int stock;
+    char *img;
+    // Ajoutez d'autres champs si nécessaire
+} Article;
+
+
 MYSQL * ConnexionBD();
 enum AuthenticationResult authenticateUser(const char *, const char *);
 void addUser(const char *, const char *);
-MYSQL_ROW getArticleById(int articleId);
+Article* getArticleById(int articleId);
 int updateArticleStock(int id, int newqte);
 int getUserIdByUsername(const char *username);
 int insererFacture(int idClient, const char* date, int paye);

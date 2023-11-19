@@ -71,7 +71,7 @@ int main(int argc,char *argv[])
   char requete[256];
   for (int i=0 ; i<21 ; i++)
   {
-	  snprintf(requete,256,"insert into articles values (NULL,'%s',%f,%d,'%s');",Elm[i].intitule,Elm[i].prix,Elm[i].stock,Elm[i].image);
+	  sprintf(requete,"insert into articles values (NULL,'%s',%f,%d,'%s');",Elm[i].intitule,Elm[i].prix,Elm[i].stock,Elm[i].image);
 	  mysql_query(connexion,requete);
   }
 

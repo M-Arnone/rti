@@ -18,6 +18,42 @@ public class Model  {
     private Socket sClient;
     private String _requete;
     private ConfigProperties cg;
+    private ArrayList<Article> panier = new ArrayList<>();
+
+    public ArrayList<Article> getPanier() {
+        return panier;
+    }
+
+    public void addArt(Article A){
+        Article addTemp = new Article();
+        boolean trouve = false;
+        for (int i = 0;( getPanier() != null && getPanier().size() > i ) && trouve == false; i++) {
+            if(getPanier().get(i).getId() == A.getId())
+            {
+                addTemp = getPanier().get(i);
+                addTemp.setQuantite(addTemp.getQuantite()+ A.getQuantite());
+                trouve = true;
+            }
+        }
+
+        if (trouve == false)
+        {
+            getPanier().add(A);
+        }
+
+        for (int i = 0; getPanier() != null && getPanier().size() > i ; i++) {
+            System.out.println("Panier client " + i + ":" + getPanier().get(i));
+        }
+    }
+
+    public void setPanier(ArrayList<Article> panier) {
+        this.panier = panier;
+    }
+
+    public int getNumArticle() {
+        return numArticle;
+    }
+
     int numArticle = 1;
 
 
@@ -49,6 +85,7 @@ public class Model  {
         else numArticle++;
         return setArticle(numArticle);
     }
+
     public Article on_pushPrecedent() throws IOException{
         if(numArticle-1 < 1)
             JOptionPane.showMessageDialog(null, "Plus d'articles", "Erreur", JOptionPane.ERROR_MESSAGE);
@@ -56,6 +93,23 @@ public class Model  {
         return setArticle(numArticle);
     }
 
+    public void on_pushAcheter(int quantite) throws IOException {
+        System.out.println("NUM ARTICLE : " + numArticle);
+        System.out.println("Quantite : " + quantite);
+        setRequete("ACHAT#" + numArticle +"#" + quantite);
+        String reponse = Echange(getRequete());
+        String[] mots = reponse.split("#");
+//        System.out.println("NumArticle " + numArticle +System.lineSeparator());
+//        System.out.println("mots[2] " + mots[2]+System.lineSeparator());
+//        System.out.println("Double.valueOf(Float.parseFloat(mots[3])) " + Float.parseFloat(mots[3])+System.lineSeparator());
+//        System.out.println("quantite " + quantite+System.lineSeparator()+System.lineSeparator());
+        if(mots[1].equals("ok")){
+            Article a = new Article(numArticle,mots[2], Double.parseDouble(mots[3]),quantite);
+            addArt(a);
+        }
+        else System.err.println("Erreur d'achat !!");
+
+    }
 
     private String Echange(String requete) throws IOException {
         // Envoie de la requête

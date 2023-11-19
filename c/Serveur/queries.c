@@ -25,7 +25,7 @@ enum AuthenticationResult authenticateUser(const char *username, const char *pas
 
     
     char query[256];
-    snprintf(query, sizeof(query), "SELECT * FROM clients WHERE login = '%s'", escaped_username);
+    sprintf(query, "SELECT * FROM clients WHERE login = '%s'", escaped_username);
 
     if (mysql_query(connexion, query) != 0) {
         fprintf(stderr, "Échec de l'exécution de la requête : %s\n", mysql_error(connexion));
@@ -69,7 +69,7 @@ void addUser(const char *username, const char *password) {
     MYSQL *connexion = ConnexionBD(); // Assurez-vous que ConnexionBD() est défini dans votre code
 
     char query[256];
-    snprintf(query, sizeof(query), "INSERT INTO clients (login, password) VALUES ('%s', '%s')", username, password);
+    sprintf(query, "INSERT INTO clients (login, password) VALUES ('%s', '%s')", username, password);
 
     if (mysql_query(connexion, query) != 0) {
         fprintf(stderr, "Échec de l'insertion de l'utilisateur : %s\n", mysql_error(connexion));
@@ -80,11 +80,11 @@ void addUser(const char *username, const char *password) {
     mysql_close(connexion);
 }
 
-MYSQL_ROW getArticleById(int articleId) {
+Article* getArticleById(int articleId) {
     MYSQL *connexion = ConnexionBD();
 
     char query[256];
-    snprintf(query, sizeof(query), "SELECT * FROM articles WHERE id = %d", articleId);
+    sprintf(query,"SELECT * FROM articles WHERE id = %d", articleId);
     if (mysql_query(connexion, query) != 0) {
         fprintf(stderr, "Échec de l'exécution de la requête : %s\n", mysql_error(connexion));
         mysql_close(connexion);
@@ -109,17 +109,30 @@ MYSQL_ROW getArticleById(int articleId) {
 
     // Récupérer les données de l'article
     MYSQL_ROW row = mysql_fetch_row(result);
+ // Créer une nouvelle instance de Article
+  Article *article = (Article *)malloc(sizeof(Article));
+    if (article == NULL) {
+        // Gestion de l'erreur d'allocation mémoire
+        mysql_free_result(result);
+        mysql_close(connexion);
+        return NULL;
+    }
 
+    // Copier les données
+    article->id = atoi(row[0]);
+    article->intitule = strdup(row[1]); // Dupliquer la chaîne
+    article->prix = atof(row[2]);
+    article->stock = atoi(row[3]);
     mysql_free_result(result);
     mysql_close(connexion);
 
-    return row;
+    return article;
 }
 
 int updateArticleStock(int id, int newqte) {
     MYSQL *connexion = ConnexionBD();
     char requete[256];
-    snprintf(requete, sizeof(requete), "UPDATE articles SET stock = %d WHERE id = %d", newqte, id);
+    sprintf(requete, "UPDATE articles SET stock = %d WHERE id = %d", newqte, id);
     if (mysql_query(connexion, requete) != 0) {
         fprintf(stderr, "Échec de la mise à jour de la quantité : %s\n", mysql_error(connexion));
         mysql_close(connexion);
@@ -138,7 +151,7 @@ int getUserIdByUsername(const char *username) {
     mysql_real_escape_string(connexion, escaped_username, username, strlen(username));
 
     char query[256];
-    snprintf(query, sizeof(query), "SELECT id FROM clients WHERE login = '%s'", escaped_username);
+    sprintf(query, "SELECT id FROM clients WHERE login = '%s'", escaped_username);
 
     if (mysql_query(connexion, query) != 0) {
         fprintf(stderr, "Échec de l'exécution de la requête : %s\n", mysql_error(connexion));
@@ -179,7 +192,7 @@ int insererFacture(int idClient,const char* date, int paye) {
     mysql_real_escape_string(connexion, escaped_date, date, strlen(date));
 
     char query[256];
-    snprintf(query, sizeof(query), "INSERT INTO factures (idClient, date, paye) VALUES (%d, '%s', %d)", idClient, escaped_date, paye);
+    sprintf(query, "INSERT INTO factures (idClient, date, paye) VALUES (%d, '%s', %d)", idClient, escaped_date, paye);
 
     if (mysql_query(connexion, query) != 0) {
         fprintf(stderr, "Échec de l'insertion de la facture : %s\n", mysql_error(connexion));
@@ -200,7 +213,7 @@ MYSQL_ROW getFactureByMaxId() {
     MYSQL_ROW Tuple;
     int idFact = -1; // Par défaut, si aucune facture n'est trouvée, idFact reste à -1
 
-    snprintf(chaine, sizeof(chaine), "SELECT MAX(id) FROM factures;"); // Utilisez 'id' au lieu de 'idfacture'
+    sprintf(chaine, "SELECT MAX(id) FROM factures;"); // Utilisez 'id' au lieu de 'idfacture'
 
     if (mysql_query(connexion, chaine) != 0) {
         fprintf(stderr, "Échec de l'exécution de la requête : %s\n", mysql_error(connexion));
@@ -229,7 +242,7 @@ MYSQL_ROW getFactureByMaxId() {
     } else {
         MYSQL_ROW row = (MYSQL_ROW)malloc(sizeof(MYSQL_ROW));
         row[0] = (char*)malloc(10 * sizeof(char)); // Vous pouvez ajuster la taille selon vos besoins
-        snprintf(row[0], 10, "%d", idFact);
+        sprintf(row[0], "%d", idFact);
         return row;
     }
 }
@@ -240,7 +253,7 @@ int insererArticleAchete(int idfacture,int idarticle, int quantite) {
 
     char query[256];
     //snprintf(query, sizeof(query), "INSERT INTO articlesachetes (idarticle, prix, stock, idfacture) VALUES (%d, '%.2f', %d, %d)", idarticle, prix, stock, idfacture);
-    snprintf(query, sizeof(query), "INSERT INTO ventes (idFacture, idArticle, quantite) VALUES (%d, %d, %d)", idfacture, idarticle,quantite);
+    sprintf(query, "INSERT INTO ventes (idFacture, idArticle, quantite) VALUES (%d, %d, %d)", idfacture, idarticle,quantite);
 
 
     if (mysql_query(connexion, query) != 0) {

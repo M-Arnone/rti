@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class Controler extends WindowAdapter implements ActionListener {
     Model m = Model.getInstance();
@@ -82,8 +83,24 @@ public class Controler extends WindowAdapter implements ActionListener {
         //ACHETER
         if(e.getSource() == _cag.getAcheterButton())
         {
-
+            int qte = (int)_cag.getSpinnerQuantite().getValue();
+            if(qte >0){
+                try {
+                    m.on_pushAcheter(qte);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+            else JOptionPane.showMessageDialog(null, "La quantite doit etre renseignée", "Erreur", JOptionPane.ERROR_MESSAGE);
+            ArrayList<Article> panier = m.getPanier();
+            for (Article article : panier) {
+                System.out.println(article);
+            }
         }
+        //SUPPRIMER
+        //VIDER PANIER
+        //PAYER
+
        _cag.revalidate();
        _cag.repaint();
     }

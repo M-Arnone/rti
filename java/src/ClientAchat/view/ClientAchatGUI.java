@@ -98,6 +98,10 @@ public class ClientAchatGUI extends JFrame {
 
     private JSpinner spinnerQuantite;
 
+    public JSpinner getSpinnerQuantite() {
+        return spinnerQuantite;
+    }
+
     public void setImage(String s) {
         s = "img/"+s;
         ImageIcon nouvelleImageIcon = new ImageIcon(s);
