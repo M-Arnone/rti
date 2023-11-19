@@ -75,7 +75,7 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
         if(!a)
             sprintf(reponse,"CONSULT#ko#-1");
         else sprintf(reponse,"CONSULT#ok#%d#%s#%f#%d#%s",a->id,a->intitule,a->prix,a->stock,a->img);//id,intitule,prix,stock,image
-        free(a->intitule); // Libérer le champ intitule
+        free(a->intitule); 
         free(a); 
     }
     // ***** ACHAT ******************************************

@@ -123,6 +123,7 @@ Article* getArticleById(int articleId) {
     article->intitule = strdup(row[1]); // Dupliquer la chaîne
     article->prix = atof(row[2]);
     article->stock = atoi(row[3]);
+    article->img = strdup(row[4]);
     mysql_free_result(result);
     mysql_close(connexion);
 
