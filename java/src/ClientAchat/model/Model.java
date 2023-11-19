@@ -99,10 +99,6 @@ public class Model  {
         setRequete("ACHAT#" + numArticle +"#" + quantite);
         String reponse = Echange(getRequete());
         String[] mots = reponse.split("#");
-//        System.out.println("NumArticle " + numArticle +System.lineSeparator());
-//        System.out.println("mots[2] " + mots[2]+System.lineSeparator());
-//        System.out.println("Double.valueOf(Float.parseFloat(mots[3])) " + Float.parseFloat(mots[3])+System.lineSeparator());
-//        System.out.println("quantite " + quantite+System.lineSeparator()+System.lineSeparator());
         if(mots[1].equals("ok")){
             Article a = new Article(numArticle,mots[2], Double.parseDouble(mots[3]),quantite);
             addArt(a);

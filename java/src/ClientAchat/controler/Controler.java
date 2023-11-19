@@ -87,15 +87,18 @@ public class Controler extends WindowAdapter implements ActionListener {
             if(qte >0){
                 try {
                     m.on_pushAcheter(qte);
+                    Article a = m.setArticle(m.getNumArticle());
+                    _cag.setImage(a.getImg());
+                    _cag.setTextFieldArticle(a.getNom());
+                    _cag.setTextFieldPrix(a.getPrix());
+                    _cag.setTextFieldStock(a.getQuantite());
+                    _cag.updateTable(m.getPanier());
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
             }
             else JOptionPane.showMessageDialog(null, "La quantite doit etre renseignée", "Erreur", JOptionPane.ERROR_MESSAGE);
-            ArrayList<Article> panier = m.getPanier();
-            for (Article article : panier) {
-                System.out.println(article);
-            }
+
         }
         //SUPPRIMER
         //VIDER PANIER

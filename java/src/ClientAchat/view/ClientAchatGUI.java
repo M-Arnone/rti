@@ -1,8 +1,12 @@
 package ClientAchat.view;
 
 import ClientAchat.controler.Controler;
+import ClientAchat.model.Article;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.util.ArrayList;
 
 public class ClientAchatGUI extends JFrame {
 
@@ -107,8 +111,18 @@ public class ClientAchatGUI extends JFrame {
         ImageIcon nouvelleImageIcon = new ImageIcon(s);
         image.setIcon(nouvelleImageIcon);
     }
+    public void updateTable(ArrayList<Article> panier) {
+        DefaultTableModel model = (DefaultTableModel) table1.getModel();
+        model.setRowCount(0); // Efface les données existantes
+
+        for (Article article : panier) {
+            model.addRow(new Object[]{article.getId(), article.getNom(), article.getPrix(), article.getQuantite()});
+        }
+    }
+
 
     private JLabel image;
+    private JScrollPane jScrollTable;
 
     public void setControler(Controler c){
         getLoginButton().addActionListener(c);
@@ -124,7 +138,18 @@ public class ClientAchatGUI extends JFrame {
 
     public ClientAchatGUI(String nom){
         super(nom);
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("ID");
+        model.addColumn("Nom");
+        model.addColumn("Prix");
+        model.addColumn("Quantité");
+        table1.setModel(model);
+
+        // Ajout de données de test
+        //model.addRow(new Object[]{1, "Article Test 1", 100.0, 10});
+
         setContentPane(panelPrincipal);
+
         pack();
     }
 
