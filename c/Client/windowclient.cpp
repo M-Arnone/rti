@@ -637,6 +637,7 @@ void WindowClient::majCaddie()
 {
   float total = 0;
   videTablePanier();
+
   for (int j = 0 ; j<20;j++)
   {
     if(tabPanierClient[j].id !=0)

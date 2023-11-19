@@ -5,14 +5,11 @@ import ClientAchat.model.Model;
 import ClientAchat.view.ClientAchatGUI;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.*;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class Controler implements ActionListener, WindowListener {
+public class Controler extends WindowAdapter implements ActionListener {
     Model m = Model.getInstance();
     private ClientAchatGUI _cag = new ClientAchatGUI("Acceuil");
     public Controler(ClientAchatGUI cag) throws SQLException, IOException, ClassNotFoundException {_cag = cag;}
@@ -54,6 +51,19 @@ public class Controler implements ActionListener, WindowListener {
                 throw new RuntimeException(ex);
             }
         }
+        //PRECEDENT
+        if(e.getSource() == _cag.getPrecedentButton())
+        {
+            try {
+                Article a = m.on_pushPrecedent();
+                _cag.setImage(a.getImg());
+                _cag.setTextFieldArticle(a.getNom());
+                _cag.setTextFieldPrix(a.getPrix());
+                _cag.setTextFieldStock(a.getQuantite());
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
         //SUIVANT
         if(e.getSource() == _cag.getSuivantButton())
         {
@@ -68,55 +78,18 @@ public class Controler implements ActionListener, WindowListener {
                 throw new RuntimeException(ex);
             }
         }
-        //PRECEDENT
-        if(e.getSource() == _cag.getPrecedentButton())
+
+        //ACHETER
+        if(e.getSource() == _cag.getAcheterButton())
         {
-            try {
-                Article a = m.on_pushPrecedent();
-                _cag.setImage(a.getImg());
-                _cag.setTextFieldArticle(a.getNom());
-                _cag.setTextFieldPrix(a.getPrix());
-                _cag.setTextFieldStock(a.getQuantite());
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
+
         }
        _cag.revalidate();
        _cag.repaint();
     }
 
     @Override
-    public void windowOpened(WindowEvent e) {
-
-    }
-
-    @Override
     public void windowClosing(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowClosed(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowIconified(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowDeiconified(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowActivated(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowDeactivated(WindowEvent e) {
 
     }
 }

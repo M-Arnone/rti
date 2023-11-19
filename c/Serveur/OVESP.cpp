@@ -91,11 +91,6 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
             double articlePrice = atof(tuple[2]);
             int articleStock = atoi(tuple[3]);
 
-            printf("Article ID: %d\n", articleId);
-            printf("Article Name: %s\n", articleName);
-            printf("Article Price: %.2f\n", articlePrice);
-            printf("Article Stock: %d\n", articleStock);
-
             int qtDispo = atoi(tuple[3]);
             if (qtDemande > qtDispo)
                     strcpy(reponse,"ACHAT#ko#Stock_Insufisant#0");
@@ -107,11 +102,8 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
                     else{
                             int j = 0;
                             bool ok = true;
-                            printf("PASSAGE\n");
                             for (j = 0,ok = true; j < NBARTICLE && ok == true; j++)
                             {
-                                printf("id : %d\n",id);
-                                printf("atof(tuple[2]) : %f\n",atof(tuple[2]));
                                 // des qu'il y a un emplacement vide ou qu'il croise l'id qu'il a
                                 if(tabPanierServeur[j].id == 0 || tabPanierServeur[j].id == id)
                                 {
@@ -121,16 +113,7 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
                                     tabPanierServeur[j].quantite = tabPanierServeur[j].quantite + qtDemande;
                                 }
                             }
-                            printf("f : %f\n",atof(tuple[2]));
-                            printf(".2f : %.2f\n",atof(tuple[2]));
-                            printf(".2lf : %.2lf\n",atof(tuple[2]));
                             sprintf(reponse,"ACHAT#ok#%s#%f#1",tuple[1],atof(tuple[2]));
-                            // strcpy(reponse,"ACHAT#ok");
-                            // strcat(reponse,"#");
-                            // strcat(reponse,tuple[1]);
-                            // strcat(reponse,"#");
-                            // strcat(reponse,tuple[2]);
-                            // strcat(reponse,"#1");
                     }
 
             }
