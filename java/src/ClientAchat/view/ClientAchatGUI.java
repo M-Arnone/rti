@@ -5,7 +5,6 @@ import ClientAchat.model.Article;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.util.ArrayList;
 
 public class ClientAchatGUI extends JFrame {
@@ -68,8 +67,13 @@ public class ClientAchatGUI extends JFrame {
     private JButton supprimerLArticleButton;
     private JButton viderLePanierButton;
     private JButton confirmerLAchatButton;
-    private JTextField textField6;
+    private JTextField textFieldTotal;
     private JPanel panelPrincipal;
+
+    public JTable getTable1() {
+        return table1;
+    }
+
     private JTextField textFieldArticle;
     private JTextField textFieldPrix;
     private JTextField textFieldStock;
@@ -111,15 +115,25 @@ public class ClientAchatGUI extends JFrame {
         ImageIcon nouvelleImageIcon = new ImageIcon(s);
         image.setIcon(nouvelleImageIcon);
     }
+
+    public JTextField getTextFieldTotal() {
+        return textFieldTotal;
+    }
+
     public void updateTable(ArrayList<Article> panier) {
         DefaultTableModel model = (DefaultTableModel) table1.getModel();
         model.setRowCount(0); // Efface les données existantes
-
+        double total = 0.0;
         for (Article article : panier) {
             model.addRow(new Object[]{article.getId(), article.getNom(), article.getPrix(), article.getQuantite()});
+            total += article.getPrix() * article.getQuantite();
         }
+        setTextFieldTotal(total);
     }
 
+    public void setTextFieldTotal(double total) {
+        this.textFieldTotal.setText(String.format("%.2f", total));
+    }
 
     private JLabel image;
     private JScrollPane jScrollTable;

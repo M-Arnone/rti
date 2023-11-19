@@ -55,6 +55,7 @@ public class Model  {
     }
 
     int numArticle = 1;
+    int numClient;
 
 
     public String getRequete() {
@@ -70,7 +71,9 @@ public class Model  {
         if(newClient)
             setRequete("LOGIN#" + nom + "#" + pwd + "#1");
         else setRequete("LOGIN#" + nom + "#" + pwd + "#0");
-        Echange(getRequete());
+        String reponse = Echange(getRequete());
+        String[] mots = reponse.split("#");
+        numClient = Integer.parseInt(mots[2]);
         setArticle(numArticle);
     }
     public void on_pushLogout() throws IOException {
@@ -105,6 +108,43 @@ public class Model  {
         }
         else System.err.println("Erreur d'achat !!");
 
+    }
+    public void on_pushSupprimerArticle(int id) throws IOException{
+        setRequete("CANCEL#" + id);
+        String reponse = Echange(getRequete());
+        String[] mots = reponse.split("#");
+        if(mots[1].equals("ok"))
+        {
+            for (Article artPass : getPanier()) {
+                if(artPass.getId() == id)
+                {
+                    getPanier().remove(artPass);
+                    return;
+                }
+            }
+        }
+        else System.out.println("Erreur de suppression!!!");
+
+    }
+    public void on_pushViderPanier() throws IOException{
+        setRequete("CANCELALL");
+        String reponse = Echange(getRequete());
+        String[] mots = reponse.split("#");
+        if(mots[1].equals("ok"))
+        {
+            getPanier().clear();
+            System.out.println("CANCELALL_OK");
+        }
+    }
+    public void on_pushPayer() throws IOException{
+        setRequete("CONFIRMER#"+numClient);
+        String reponse = Echange(getRequete());
+        String[] mots = reponse.split("#");
+        if(mots[1].equals("ok"))
+        {
+            getPanier().clear();
+            System.out.println("Confirm_OK");
+        }
     }
 
     private String Echange(String requete) throws IOException {

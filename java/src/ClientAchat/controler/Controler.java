@@ -5,6 +5,7 @@ import ClientAchat.model.Model;
 import ClientAchat.view.ClientAchatGUI;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.*;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -87,12 +88,7 @@ public class Controler extends WindowAdapter implements ActionListener {
             if(qte >0){
                 try {
                     m.on_pushAcheter(qte);
-                    Article a = m.setArticle(m.getNumArticle());
-                    _cag.setImage(a.getImg());
-                    _cag.setTextFieldArticle(a.getNom());
-                    _cag.setTextFieldPrix(a.getPrix());
-                    _cag.setTextFieldStock(a.getQuantite());
-                    _cag.updateTable(m.getPanier());
+                    majCurrentArticle();
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -101,13 +97,55 @@ public class Controler extends WindowAdapter implements ActionListener {
 
         }
         //SUPPRIMER
+        if(e.getSource() == _cag.getSupprimerLArticleButton())
+        {
+            int row = _cag.getTable1().getSelectedRow();
+            if(row == -1) JOptionPane.showMessageDialog(null, "La quantite doit etre renseignée", "Erreur", JOptionPane.ERROR_MESSAGE);
+            else{
+                try {
+                    DefaultTableModel model = (DefaultTableModel) _cag.getTable1().getModel();
+                    int id = (int) model.getValueAt(row, 0);
+                    m.on_pushSupprimerArticle(id);
+                    _cag.updateTable(m.getPanier());
+                    majCurrentArticle();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+
+        }
         //VIDER PANIER
+        if(e.getSource() == _cag.getViderLePanierButton())
+        {
+            try {
+                m.on_pushViderPanier();
+                majCurrentArticle();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
         //PAYER
+        if(e.getSource() == _cag.getConfirmerLAchatButton())
+        {
+            try {
+                m.on_pushPayer();
+                majCurrentArticle();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
 
        _cag.revalidate();
        _cag.repaint();
     }
-
+    private void majCurrentArticle() throws IOException {
+        Article a = m.setArticle(m.getNumArticle());
+        _cag.setImage(a.getImg());
+        _cag.setTextFieldArticle(a.getNom());
+        _cag.setTextFieldPrix(a.getPrix());
+        _cag.setTextFieldStock(a.getQuantite());
+        _cag.updateTable(m.getPanier());
+    }
     @Override
     public void windowClosing(WindowEvent e) {
 
