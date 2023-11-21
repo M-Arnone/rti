@@ -3,7 +3,7 @@ import java.sql.*;
 import java.util.Hashtable;
 public class connexionBD {
     Connection con = null;
-    public connexionBD(String ip){
+    public connexionBD(String ip) throws ClassNotFoundException, SQLException{
         try {
             Class leDriver = Class.forName("com.mysql.cj.jdbc.Driver");
             System.out.println("Obtention du driver OK...");

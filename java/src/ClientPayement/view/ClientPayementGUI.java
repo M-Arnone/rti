@@ -57,6 +57,14 @@ public class ClientPayementGUI extends JFrame {
         this.btnPayerFactures = btnPayerFactures;
     }
 
+    public JTextField getTextFieldLogin() {
+        return textFieldLogin;
+    }
+
+    public JTextField getTextFieldPassword() {
+        return textFieldPassword;
+    }
+
     public JTable getFactureDetaille() {
         return factureDetaille;
     }
@@ -72,8 +80,14 @@ public class ClientPayementGUI extends JFrame {
         getBtnPayerFactures().addActionListener(c);
         addWindowListener(c);
     }
+    public ClientPayementGUI()
+    {
+        setContentPane(panelPrincipal);
+        pack();
+    }
 
     public static void main(String[] args) {
-
+        ClientPayementGUI cpg = new ClientPayementGUI();
+        cpg.setVisible(true);
     }
 }
