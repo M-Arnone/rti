@@ -86,6 +86,14 @@ int main(int argc,char *argv[])
   mysql_query(connexion, "INSERT INTO clients (login, password) VALUES ('charlet', 'xyz456');");
   mysql_query(connexion, "INSERT INTO clients (login, password) VALUES ('w', '1');");
 
+  //employes
+
+  printf("Creation de la table employes...\n");
+
+  mysql_query(connexion,"create table employes (id INT(4) auto_increment primary key, login varchar(20),password varchar(20));");
+  printf("Ajout des employes...\n");
+  mysql_query(connexion, "INSERT INTO employes (login, password) VALUES ('q', '1');");
+
 
   // Création de la table factures
   printf("Création de la table factures...\n");

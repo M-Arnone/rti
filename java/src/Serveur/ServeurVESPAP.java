@@ -15,7 +15,7 @@ public class ServeurVESPAP implements Logger{
         try
         {
             Protocole protocole = new VESPAP(this);
-            int port = 1234;
+            int port = 5678;
             int taillePool = 10;
             threadServeur = new ThreadServeurPool(port,protocole,taillePool,this);
             threadServeur.start();
