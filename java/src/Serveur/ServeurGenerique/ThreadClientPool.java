@@ -1,11 +1,13 @@
-package Serveur;
+package Serveur.ServeurGenerique;
+
+import Serveur.Logger;
 
 import java.io.IOException;
 
 public class ThreadClientPool extends ThreadClient
 {
     private FileAttente connexionsEnAttente;
-    public ThreadClientPool(Protocole p, FileAttente file, ThreadGroup tg,Logger l) throws IOException
+    public ThreadClientPool(Protocole p, FileAttente file, ThreadGroup tg, Logger l) throws IOException
     {
         super(p,tg,l);
         connexionsEnAttente = file;

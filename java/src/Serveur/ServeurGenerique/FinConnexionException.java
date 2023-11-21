@@ -1,4 +1,4 @@
-package Serveur;
+package Serveur.ServeurGenerique;
 
 public class FinConnexionException extends Exception{
     private Reponse reponse;

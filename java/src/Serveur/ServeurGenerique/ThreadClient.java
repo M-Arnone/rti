@@ -1,4 +1,6 @@
-package Serveur;
+package Serveur.ServeurGenerique;
+
+import Serveur.Logger;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

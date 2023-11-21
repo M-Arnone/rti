@@ -1,6 +1,5 @@
-package Serveur;
+package Serveur.ServeurGenerique;
 
-import java.io.IOException;
 import java.net.Socket;
 
 public interface Protocole {

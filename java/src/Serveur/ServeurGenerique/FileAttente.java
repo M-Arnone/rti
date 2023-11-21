@@ -1,4 +1,4 @@
-package Serveur;
+package Serveur.ServeurGenerique;
 
 import java.net.Socket;
 import java.util.LinkedList;
