@@ -1,6 +1,6 @@
 package ClientAchat.controler;
 
-import ClientAchat.model.Article;
+import BD.classes.Article;
 import ClientAchat.model.Model;
 import ClientAchat.view.ClientAchatGUI;
 
@@ -9,7 +9,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.*;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 public class Controler extends WindowAdapter implements ActionListener {
     Model m = Model.getInstance();

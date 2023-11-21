@@ -15,8 +15,9 @@ public class Main {
             FlatLightLaf.setup();
             Model m = Model.getInstance();
             ClientPayementGUI cpg = new ClientPayementGUI();
-            cpg.setVisible(true);
             Controler c = new Controler(cpg);
+            cpg.setControler(c);
+            cpg.setVisible(true);
         }catch (SQLException | IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

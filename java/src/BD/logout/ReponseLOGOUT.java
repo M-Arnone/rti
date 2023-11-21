@@ -1,6 +1,6 @@
-package Serveur.ProtocoleVESPAP;
+package BD.logout;
 
-import Serveur.ServeurGenerique.Reponse;
+import BD.interfaces.Reponse;
 
 public class ReponseLOGOUT implements Reponse {
     private boolean valide;

@@ -1,26 +1,27 @@
 package Serveur.ProtocoleVESPAP;
 
+import BD.interfaces.*;
+import BD.login.ReponseLOGIN;
+import BD.login.RequeteLOGIN;
+import BD.logout.RequeteLOGOUT;
+import BD.requetesBD;
 import Serveur.*;
 import Serveur.ServeurGenerique.FinConnexionException;
 import Serveur.ServeurGenerique.Protocole;
-import Serveur.ServeurGenerique.Reponse;
-import Serveur.ServeurGenerique.Requete;
 
 import java.net.Socket;
 import java.util.HashMap;
 
 public class VESPAP implements Protocole {
-    private HashMap<String,String> passwords;
+
     private HashMap<String,Socket> clientsConnectes;
     private Logger logger;
+    private requetesBD rbd;
 
     public VESPAP(Logger log)
     {
-        passwords = new HashMap<>();
-        passwords.put("wagner","abcd");
-        passwords.put("charlet","1234");
-        passwords.put("w","1");
         logger = log;
+        rbd = new requetesBD(logger);
         clientsConnectes = new HashMap<>();
     }
     @Override
@@ -40,17 +41,21 @@ public class VESPAP implements Protocole {
     private synchronized ReponseLOGIN TraiteRequeteLOGIN(RequeteLOGIN requete, Socket socket) throws FinConnexionException
     {
         logger.Trace("VESPAP - RequeteLOGIN reçue de " + requete.getLogin());
-        String password = passwords.get(requete.getLogin());
-        if (password != null)
-            if (password.equals(requete.getPassword()))
-            {
+        if(!clientsConnectes.containsKey(requete.getLogin()))
+        {
+            if(rbd.login(requete)){
                 String ipPortClient = socket.getInetAddress().getHostAddress() + "/" + socket.getPort();
                 logger.Trace(requete.getLogin() + " correctement loggé de " + ipPortClient);
                 clientsConnectes.put(requete.getLogin(),socket);
                 return new ReponseLOGIN(true);
             }
-        logger.Trace(requete.getLogin() + " --> erreur de login");
-        throw new FinConnexionException(new ReponseLOGIN(false));
+            return new ReponseLOGIN(false,"Le nom d'utilisateur ou le mot passe entré est incorrect!");
+        }
+        else{
+            logger.Trace(requete.getLogin() + " --> erreur de login");
+            throw new FinConnexionException(new ReponseLOGIN(false));
+        }
+
     }
 
     private synchronized void TraiteRequeteLOGOUT(RequeteLOGOUT requete) throws FinConnexionException
@@ -60,5 +65,6 @@ public class VESPAP implements Protocole {
         logger.Trace(requete.getLogin() + " correctement déloggé");
         throw new FinConnexionException(null);
     }
+
 
 }

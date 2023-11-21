@@ -1,15 +1,14 @@
 package ClientAchat.model;
 
-import javax.sound.midi.Receiver;
+import BD.classes.Article;
+
 import javax.swing.*;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Properties;
 
 public class Model  {
     public static volatile Model instance;

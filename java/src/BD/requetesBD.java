@@ -1,7 +1,7 @@
-package Serveur.BD;
+package BD;
 
 import Serveur.Logger;
-import Serveur.ProtocoleVESPAP.RequeteLOGIN;
+import BD.login.RequeteLOGIN;
 
 import java.sql.*;
 

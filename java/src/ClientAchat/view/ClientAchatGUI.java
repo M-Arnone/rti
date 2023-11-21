@@ -1,7 +1,7 @@
 package ClientAchat.view;
 
 import ClientAchat.controler.Controler;
-import ClientAchat.model.Article;
+import BD.classes.Article;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

@@ -1,4 +1,4 @@
-package ClientAchat.model;
+package BD.classes;
 
 public class Article {
     int id;

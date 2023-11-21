@@ -1,4 +1,4 @@
-package Serveur.ServeurGenerique;
+package BD.interfaces;
 
 import java.io.Serializable;
 

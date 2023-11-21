@@ -1,5 +1,7 @@
 package Serveur.ServeurGenerique;
 
+import BD.interfaces.Reponse;
+import BD.interfaces.Requete;
 import Serveur.Logger;
 
 import java.io.IOException;

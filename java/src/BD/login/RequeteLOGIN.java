@@ -1,5 +1,5 @@
-package Serveur.ProtocoleVESPAP;
-import Serveur.ServeurGenerique.Requete;
+package BD.login;
+import BD.interfaces.Requete;
 
 public class RequeteLOGIN implements Requete {
     private String login;

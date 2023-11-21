@@ -1,6 +1,6 @@
-package Serveur.ProtocoleVESPAP;
+package BD.logout;
 
-import Serveur.ServeurGenerique.Requete;
+import BD.interfaces.Requete;
 
 public class RequeteLOGOUT implements Requete {
     private String login;

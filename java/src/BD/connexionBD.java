@@ -1,6 +1,6 @@
-package Serveur.BD;
+package BD;
 import java.sql.*;
-import java.util.Hashtable;
+
 public class connexionBD {
     Connection con = null;
     public connexionBD(String ip) throws ClassNotFoundException, SQLException{
