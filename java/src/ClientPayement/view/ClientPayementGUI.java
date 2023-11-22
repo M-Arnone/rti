@@ -1,8 +1,12 @@
 package ClientPayement.view;
 
+import BD.classes.Article;
+import BD.classes.Facture;
 import ClientPayement.controler.Controler;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.util.ArrayList;
 
 public class ClientPayementGUI extends JFrame {
 
@@ -12,10 +16,14 @@ public class ClientPayementGUI extends JFrame {
     private JButton btnConnexion;
     private JButton btnDeconnexion;
     private JTable factureClient;
-    private JTextField textField3;
+    private JTextField textFieldClient;
     private JButton btnVoirFactures;
     private JButton btnPayerFactures;
     private JTable factureDetaille;
+
+    public JTextField getTextFieldClient() {
+        return textFieldClient;
+    }
 
     public JButton getBtnConnexion() {
         return btnConnexion;
@@ -76,13 +84,28 @@ public class ClientPayementGUI extends JFrame {
     public void setControler(Controler c){
         getBtnConnexion().addActionListener(c);
         getBtnDeconnexion().addActionListener(c);
-        getBtnPayerFactures().addActionListener(c);
+        getBtnVoirFactures().addActionListener(c);
         getBtnPayerFactures().addActionListener(c);
         addWindowListener(c);
+    }
+    public void updateFactures(ArrayList<Facture> listfacture)
+    {
+        DefaultTableModel model = (DefaultTableModel) factureClient.getModel();
+        model.setRowCount(0);
+        for (Facture facture : listfacture) {
+            model.addRow(new Object[]{facture.getId(),facture.getIdClient(), facture.getDate(), facture.getMontant(),facture.getPaye()});
+        }
     }
     public ClientPayementGUI()
     {
         setContentPane(panelPrincipal);
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Id");
+        model.addColumn("IdClient");
+        model.addColumn("Date");
+        model.addColumn("Montant");
+        model.addColumn("Payé");
+        factureClient.setModel(model);
         pack();
     }
 

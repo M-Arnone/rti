@@ -1,9 +1,12 @@
 package BD;
 
+import BD.classes.Facture;
+import BD.facture.RequeteGETFACTURES;
 import Serveur.Logger;
 import BD.login.RequeteLOGIN;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class requetesBD {
     private connexionBD cbd;
@@ -43,6 +46,29 @@ public class requetesBD {
             throw new RuntimeException("Une erreur est survenue lors de l'envoi de la requete!");
         }
         return false;
+    }
+    public ArrayList<Facture> getFactures(RequeteGETFACTURES requete){
+        int idClient = requete.getIdClient();
+        try
+        {
+            String requeteSql = "SELECT id,idclient, date, montant, paye FROM factures WHERE idClient = " + idClient + ";";
+            ResultSet rs = cbd.getTuple(requeteSql);
+            ArrayList<Facture> listeFactures = new ArrayList<>();
+            while(rs.next()) {
+                int id = rs.getInt("id");
+                int idc = rs.getInt("idclient");
+                Date date = rs.getDate("date");
+                float montant = rs.getFloat("montant");
+                boolean paye = rs.getBoolean("paye");
+
+                Facture facture = new Facture(id, idc,date, montant, paye);
+                listeFactures.add(facture);
+            }
+            return listeFactures;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public void close(){

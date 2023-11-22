@@ -1,5 +1,8 @@
 package Serveur.ProtocoleVESPAP;
 
+import BD.classes.Facture;
+import BD.facture.ReponseGETFACTURES;
+import BD.facture.RequeteGETFACTURES;
 import BD.interfaces.*;
 import BD.login.ReponseLOGIN;
 import BD.login.RequeteLOGIN;
@@ -10,6 +13,7 @@ import Serveur.ServeurGenerique.FinConnexionException;
 import Serveur.ServeurGenerique.Protocole;
 
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class VESPAP implements Protocole {
@@ -36,6 +40,8 @@ public class VESPAP implements Protocole {
             return TraiteRequeteLOGIN((RequeteLOGIN) requete, socket);
         if (requete instanceof RequeteLOGOUT)
             TraiteRequeteLOGOUT((RequeteLOGOUT) requete);
+        if(requete instanceof RequeteGETFACTURES)
+            return TraiteRequeteGETFACTURES((RequeteGETFACTURES) requete);
         return null;
     }
     private synchronized ReponseLOGIN TraiteRequeteLOGIN(RequeteLOGIN requete, Socket socket) throws FinConnexionException
@@ -64,6 +70,11 @@ public class VESPAP implements Protocole {
         clientsConnectes.remove(requete.getLogin());
         logger.Trace(requete.getLogin() + " correctement déloggé");
         throw new FinConnexionException(null);
+    }
+    private synchronized ReponseGETFACTURES TraiteRequeteGETFACTURES(RequeteGETFACTURES requete)
+    {
+        ArrayList<Facture> listeFactures = rbd.getFactures(requete);
+        return new ReponseGETFACTURES(listeFactures);
     }
 
 

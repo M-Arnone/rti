@@ -224,10 +224,11 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
         bool paye= false; // Montant
         int idFact = 0;
         bool ok = true;
+        float montant = 3.12;
 
         MYSQL_ROW tuple;
 
-        int ret = insererFacture(idClient,date,paye);
+        int ret = insererFacture(idClient,date,montant,paye);
         if(!ret)
             strcpy(reponse,"CONFIRMER#ko#ERREUR_SQL#-1#1");
         else{

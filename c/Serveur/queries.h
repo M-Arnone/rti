@@ -37,7 +37,7 @@ void addUser(const char *, const char *);
 Article* getArticleById(int articleId);
 int updateArticleStock(int id, int newqte);
 int getUserIdByUsername(const char *username);
-int insererFacture(int idClient, const char* date, int paye);
+int insererFacture(int idClient, const char* date,float montant, int paye);
 MYSQL_ROW getFactureByMaxId(); 
 int insererArticleAchete(int,int,int); 
 #endif

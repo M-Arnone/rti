@@ -122,7 +122,7 @@ public class ClientAchatGUI extends JFrame {
 
     public void updateTable(ArrayList<Article> panier) {
         DefaultTableModel model = (DefaultTableModel) table1.getModel();
-        model.setRowCount(0); // Efface les données existantes
+        model.setRowCount(0);
         double total = 0.0;
         for (Article article : panier) {
             model.addRow(new Object[]{article.getId(), article.getNom(), article.getPrix(), article.getQuantite()});

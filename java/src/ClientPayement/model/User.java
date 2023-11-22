@@ -11,6 +11,7 @@ public class User {
         isConnected = true;
     }
 
+
     public String getLogin() {
         return login;
     }

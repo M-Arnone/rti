@@ -1,13 +1,18 @@
 package ClientPayement.model;
 
+import BD.classes.Facture;
+import BD.facture.ReponseGETFACTURES;
+import BD.facture.RequeteGETFACTURES;
 import BD.login.ReponseLOGIN;
 import BD.login.RequeteLOGIN;
+import BD.logout.RequeteLOGOUT;
 import ClientPayement.model.ConfigProperties;
 import BD.interfaces.*;
 
 import java.io.*;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class Model {
 
@@ -16,6 +21,12 @@ public class Model {
     private ObjectInputStream ois;
     private Socket sClient;
     private User user;
+    private ArrayList<Facture> listeFacture;
+
+    public User getUser() {
+        return user;
+    }
+
     public void connectToServer() throws IOException {
         ConfigProperties cg = new ConfigProperties();
         sClient = new Socket(cg.getServeurIP(),cg.getServeurPort());
@@ -27,7 +38,6 @@ public class Model {
         RequeteLOGIN requete = new RequeteLOGIN(username, password);
         Reponse rep = traiteRequete(requete);
         if(rep instanceof ReponseLOGIN){
-            System.out.println("PASSAGE");
             if(((ReponseLOGIN) rep).isValide()){
                 user = new User(username,password);
                 return true;
@@ -35,6 +45,29 @@ public class Model {
             else return false;
         }
         return false;
+    }
+    public void logout() throws IOException, ClassNotFoundException {
+        try{
+            RequeteLOGOUT requete = new RequeteLOGOUT(user.getLogin());
+            user.setConnected(false);
+            oos.writeObject(requete);
+        }
+        catch(IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+    public ArrayList<Facture> GetFactures(int idClient) throws Exception {
+        RequeteGETFACTURES requete = new RequeteGETFACTURES(idClient);
+        Reponse reponse = traiteRequete(requete);
+        if (reponse instanceof ReponseGETFACTURES) {
+            if (((ReponseGETFACTURES) reponse).getListeFactures().size() > 0) {
+                return listeFacture = ((ReponseGETFACTURES) reponse).getListeFactures();
+            }
+            else throw new Exception("Aucune facture n'a été trouvé pour ce numéro de client!");
+
+        }
+        else throw new Exception("Une erreur inconnue est survenue...");
     }
 
     public Reponse traiteRequete(Requete requete) throws IOException, ClassNotFoundException {
