@@ -52,6 +52,7 @@ public:
 
     ARTICLE remplirArticle(char *);
     void majCaddie();
+    const char *getTotal();
     
 
 private slots:
@@ -66,7 +67,7 @@ private slots:
 
 private:
     Ui::WindowClient *ui;
-
+    char total[250];
     char motDePasse[20];
     char nom[20];
 };

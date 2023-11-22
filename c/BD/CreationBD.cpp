@@ -97,7 +97,7 @@ int main(int argc,char *argv[])
 
   // Création de la table factures
   printf("Création de la table factures...\n");
-  mysql_query(connexion, "CREATE TABLE factures (id INT(4) AUTO_INCREMENT PRIMARY KEY, idClient INT(4), date DATE,montant DECIMAL(10,2), paye BOOLEAN);");
+  mysql_query(connexion, "CREATE TABLE factures (id INT(4) AUTO_INCREMENT PRIMARY KEY, idClient INT(4), date DATE,montant varchar(20), paye BOOLEAN);");
 
   // Création de la table ventes
   printf("Création de la table ventes...\n");

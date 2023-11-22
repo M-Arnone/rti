@@ -6,6 +6,7 @@
 #include <pthread.h>
 #include <stdbool.h>
 #include <sys/socket.h>
+#include <algorithm>
 
 #define NBARTICLE 21
 
@@ -218,13 +219,16 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
     }
     // ***** CONFIRMER ******************************************
     if(strcmp(ptr,"CONFIRMER") == 0){
+        printf("ptr : %s\n\n",ptr);
         char date[20]; 
-        int idClient = atoi(strtok(NULL,"#"));  
+        int idClient =  atoi(strtok(NULL,"#")); 
+        char *montant = strtok(NULL, "#");
+        
+        
         strcpy(date,"2023-10-08"); // Date
         bool paye= false; // Montant
         int idFact = 0;
         bool ok = true;
-        float montant = 3.12;
 
         MYSQL_ROW tuple;
 

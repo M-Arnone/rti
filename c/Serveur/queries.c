@@ -185,7 +185,7 @@ int getUserIdByUsername(const char *username) {
 
     return userId;
 }
-int insererFacture(int idClient,const char* date,float montant, int paye) {
+int insererFacture(int idClient,const char* date,const char *montant, int paye) {
     MYSQL* connexion = ConnexionBD();
 
     // Échapper les caractères spéciaux dans la date
@@ -193,7 +193,7 @@ int insererFacture(int idClient,const char* date,float montant, int paye) {
     mysql_real_escape_string(connexion, escaped_date, date, strlen(date));
 
     char query[256];
-    sprintf(query, "INSERT INTO factures (idClient, date,montant, paye) VALUES (%d, '%s',%.2f, %d)", idClient, escaped_date,montant, paye);
+    sprintf(query, "INSERT INTO factures (idClient, date,montant, paye) VALUES (%d, '%s','%s', %d)", idClient, escaped_date,montant, paye);
 
     if (mysql_query(connexion, query) != 0) {
         fprintf(stderr, "Échec de l'insertion de la facture : %s\n", mysql_error(connexion));

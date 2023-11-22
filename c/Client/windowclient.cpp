@@ -119,6 +119,13 @@ const char* WindowClient::getMotDePasse()
   strcpy(motDePasse,ui->lineEditMotDePasse->text().toStdString().c_str());
   return motDePasse;
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const char* WindowClient::getTotal()
+{
+  strcpy(total,ui->lineEditTotal->text().toStdString().c_str());
+  return total;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void WindowClient::setPublicite(const char* Text)
@@ -542,11 +549,11 @@ void WindowClient::on_pushButtonPayer_clicked()
   char messageRecu[1400];
   char messageEnvoye[1400];
   char tmp[50];
-
   if(tabPanierClient[0].id == 0)
     dialogueErreur("Erreur article panier","Pas d'articles dans le panier..");
   else{
-    sprintf(messageEnvoye, "CONFIRMER#%d",numClient);
+    sprintf(messageEnvoye, "CONFIRMER#%d#%s",numClient,getTotal());
+    printf("messageEnvoye : %s\n", messageEnvoye);
     Echange(messageEnvoye, messageRecu);
     strcpy(tmp,strtok(messageRecu,"#"));
     strcpy(tmp,strtok(NULL,"#"));
