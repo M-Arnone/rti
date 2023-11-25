@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.sql.SQLException;
 
 public abstract class ThreadClient extends Thread {
     protected Protocole protocole;
@@ -55,6 +56,8 @@ public abstract class ThreadClient extends Thread {
                 logger.Trace("Thread Client - Fin connexion demandée par le protocle");
                 if(oos != null && ex.getReponse() != null)
                         oos.writeObject(ex.getReponse());
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         }
         catch (IOException ex) { logger.Trace("Erreur I/O"); }

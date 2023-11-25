@@ -2,6 +2,7 @@ package BD;
 
 import BD.classes.Facture;
 import BD.facture.RequeteGETFACTURES;
+import BD.facture.RequetePAYFACTURES;
 import Serveur.Logger;
 import BD.login.RequeteLOGIN;
 
@@ -58,7 +59,7 @@ public class requetesBD {
                 int id = rs.getInt("id");
                 int idc = rs.getInt("idclient");
                 Date date = rs.getDate("date");
-                float montant = rs.getFloat("montant");
+                String montant = rs.getString("montant");
                 boolean paye = rs.getBoolean("paye");
 
                 Facture facture = new Facture(id, idc,date, montant, paye);
@@ -70,6 +71,16 @@ public class requetesBD {
         }
 
     }
+
+    public boolean payFacture(RequetePAYFACTURES requete) throws SQLException {
+        int idFacture = requete.getIdFacture();
+        String requeteSql = "UPDATE factures SET paye = true WHERE id = "+idFacture +";";
+        int nbLignesAffectees = cbd.executeUpdate(requeteSql);
+        if(nbLignesAffectees == 1) return true;
+        else return false;
+
+    }
+
 
     public void close(){
         try {

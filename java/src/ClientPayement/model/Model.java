@@ -2,7 +2,9 @@ package ClientPayement.model;
 
 import BD.classes.Facture;
 import BD.facture.ReponseGETFACTURES;
+import BD.facture.ReponsePAYFACTURES;
 import BD.facture.RequeteGETFACTURES;
+import BD.facture.RequetePAYFACTURES;
 import BD.login.ReponseLOGIN;
 import BD.login.RequeteLOGIN;
 import BD.logout.RequeteLOGOUT;
@@ -21,6 +23,11 @@ public class Model {
     private ObjectInputStream ois;
     private Socket sClient;
     private User user;
+
+    public ArrayList<Facture> getListeFacture() {
+        return listeFacture;
+    }
+
     private ArrayList<Facture> listeFacture;
 
     public User getUser() {
@@ -68,6 +75,22 @@ public class Model {
 
         }
         else throw new Exception("Une erreur inconnue est survenue...");
+    }
+    public boolean PayFacture(Facture facture,String nom, String visa) throws IOException, ClassNotFoundException {
+        try{
+            System.out.println("---ENVOI PAY FACTURES---");
+            RequetePAYFACTURES requete = new RequetePAYFACTURES(facture.getId(),nom,visa);
+            Reponse reponse = traiteRequete(requete);
+            if(reponse instanceof ReponsePAYFACTURES){
+                if(((ReponsePAYFACTURES) reponse).isValide())
+                    return true;
+                else return false;
+            }
+            return false;
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Reponse traiteRequete(Requete requete) throws IOException, ClassNotFoundException {

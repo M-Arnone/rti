@@ -106,6 +106,9 @@ public class ClientPayementGUI extends JFrame {
         model.addColumn("Montant");
         model.addColumn("Payé");
         factureClient.setModel(model);
+        getBtnDeconnexion().setEnabled(false);
+        getBtnVoirFactures().setEnabled(false);
+        getBtnPayerFactures().setEnabled(false);
         pack();
     }
 

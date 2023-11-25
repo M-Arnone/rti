@@ -2,7 +2,9 @@ package Serveur.ProtocoleVESPAP;
 
 import BD.classes.Facture;
 import BD.facture.ReponseGETFACTURES;
+import BD.facture.ReponsePAYFACTURES;
 import BD.facture.RequeteGETFACTURES;
+import BD.facture.RequetePAYFACTURES;
 import BD.interfaces.*;
 import BD.login.ReponseLOGIN;
 import BD.login.RequeteLOGIN;
@@ -13,6 +15,7 @@ import Serveur.ServeurGenerique.FinConnexionException;
 import Serveur.ServeurGenerique.Protocole;
 
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -34,14 +37,15 @@ public class VESPAP implements Protocole {
         return "VESPAP";
     }
     @Override
-    public synchronized Reponse TraiteRequete(Requete requete, Socket socket) throws FinConnexionException
-    {
+    public synchronized Reponse TraiteRequete(Requete requete, Socket socket) throws FinConnexionException, SQLException {
         if (requete instanceof RequeteLOGIN)
             return TraiteRequeteLOGIN((RequeteLOGIN) requete, socket);
         if (requete instanceof RequeteLOGOUT)
             TraiteRequeteLOGOUT((RequeteLOGOUT) requete);
         if(requete instanceof RequeteGETFACTURES)
             return TraiteRequeteGETFACTURES((RequeteGETFACTURES) requete);
+        if(requete instanceof RequetePAYFACTURES)
+            return TraiteRequetePAYFACTURES((RequetePAYFACTURES) requete);
         return null;
     }
     private synchronized ReponseLOGIN TraiteRequeteLOGIN(RequeteLOGIN requete, Socket socket) throws FinConnexionException
@@ -61,7 +65,19 @@ public class VESPAP implements Protocole {
             logger.Trace(requete.getLogin() + " --> erreur de login");
             throw new FinConnexionException(new ReponseLOGIN(false));
         }
-
+    }
+    private synchronized ReponseGETFACTURES TraiteRequeteGETFACTURES(RequeteGETFACTURES requete)
+    {
+        ArrayList<Facture> listeFactures = rbd.getFactures(requete);
+        return new ReponseGETFACTURES(listeFactures);
+    }
+    private synchronized ReponsePAYFACTURES TraiteRequetePAYFACTURES(RequetePAYFACTURES requete) throws SQLException {
+            if(isVisaOk(requete.getVisa())) {
+                if(rbd.payFacture(requete))
+                    return new ReponsePAYFACTURES(true);
+                else return new ReponsePAYFACTURES(false,"Le paiement n'a pas pu être effectué...");
+            }
+            return new ReponsePAYFACTURES(false,"Le numéro de carte VISA est invalide!");
     }
 
     private synchronized void TraiteRequeteLOGOUT(RequeteLOGOUT requete) throws FinConnexionException
@@ -71,11 +87,18 @@ public class VESPAP implements Protocole {
         logger.Trace(requete.getLogin() + " correctement déloggé");
         throw new FinConnexionException(null);
     }
-    private synchronized ReponseGETFACTURES TraiteRequeteGETFACTURES(RequeteGETFACTURES requete)
-    {
-        ArrayList<Facture> listeFactures = rbd.getFactures(requete);
-        return new ReponseGETFACTURES(listeFactures);
-    }
 
+    private boolean isVisaOk(String visa) {
+    if(visa.length() == 16) {
+        for(char c : visa.toCharArray()) {
+            if(!Character.isDigit(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    else return false;
+
+    }
 
 }
