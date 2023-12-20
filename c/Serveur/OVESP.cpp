@@ -42,6 +42,7 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
         strcpy(user,strtok(NULL,"#"));
         strcpy(password,strtok(NULL,"#"));
         newUser = atoi(strtok(NULL,"#"));
+        printf("\n\nNEW USERRRR :%d\n\n",newUser);
         printf("\t[THREAD %p] LOGIN de %s\n",(void*)pthread_self(),user);
 
         if (estPresent(socket) >= 0){ // client déjà loggé
@@ -49,21 +50,25 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
             return true;
         }
         else{
-            if (SMOP_Login(user,password) == AUTH_SUCCESS){
-                sprintf(reponse,"LOGIN#ok#%d",getUserIdByUsername(user));
-                ajoute(socket);
+            if(newUser == 1){
+                    sprintf(reponse,"SIGNUP");
+                    SMOP_Signup(user,password);
+                    sprintf(reponse,"LOGIN#ok#%d",getUserIdByUsername(user));
+                    ajoute(socket);
+                    return true;
             }
-            else if(SMOP_Login(user,password) == AUTH_INCORRECT_PASSWORD)
+            else{
+                if (SMOP_Login(user,password) == AUTH_SUCCESS){
+                    sprintf(reponse,"LOGIN#ok#%d",getUserIdByUsername(user));
+                    ajoute(socket);
+                }
+                else if(SMOP_Login(user,password) == AUTH_INCORRECT_PASSWORD)
                         sprintf(reponse,"LOGIN#ko#pwd");
                     else 
                         if(SMOP_Login(user,password) == AUTH_USERNAME_NOT_FOUND){
-                            sprintf(reponse,"LOGIN#ko#username");
-                            if(newUser == 1){
-                                sprintf(reponse,"SIGNUP");
-                                SMOP_Signup(user,password);
-                            }
-                                
+                            sprintf(reponse,"LOGIN#ko#username");         
                         }
+            }
             
             return true;
             
