@@ -127,7 +127,7 @@ public class Controler extends WindowAdapter implements ActionListener {
         if(e.getSource() == _cag.getConfirmerLAchatButton())
         {
             try {
-                m.on_pushPayer();
+                m.on_pushPayer(_cag.getTextFieldTotal().getText());
                 majCurrentArticle();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);

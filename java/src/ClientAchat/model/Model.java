@@ -135,8 +135,8 @@ public class Model  {
             System.out.println("CANCELALL_OK");
         }
     }
-    public void on_pushPayer() throws IOException{
-        setRequete("CONFIRMER#"+numClient);
+    public void on_pushPayer(String total) throws IOException{
+        setRequete("CONFIRMER#"+numClient+"#"+total);
         String reponse = Echange(getRequete());
         String[] mots = reponse.split("#");
         if(mots[1].equals("ok"))

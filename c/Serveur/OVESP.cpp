@@ -225,19 +225,10 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
     // ***** CONFIRMER ******************************************
     if(strcmp(ptr,"CONFIRMER") == 0){
         printf("ptr : %s\n\n",ptr);
-        char date[20]; 
         int idClient =  atoi(strtok(NULL,"#")); 
         char *montant = strtok(NULL, "#");
-        
-        
-        strcpy(date,"2023-10-08"); // Date
-        bool paye= false; // Montant
-        int idFact = 0;
-        bool ok = true;
 
-        MYSQL_ROW tuple;
-
-        int ret = insererFacture(idClient,date,montant,paye);
+        int ret = insererFacture(idClient,montant,paye);
         if(!ret)
             strcpy(reponse,"CONFIRMER#ko#ERREUR_SQL#-1#1");
         else{
