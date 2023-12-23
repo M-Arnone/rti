@@ -227,8 +227,11 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
         printf("ptr : %s\n\n",ptr);
         int idClient =  atoi(strtok(NULL,"#")); 
         char *montant = strtok(NULL, "#");
-
+        bool paye = false;
+        bool ok = true;
+        int idFact;
         int ret = insererFacture(idClient,montant,paye);
+        MYSQL_ROW tuple;
         if(!ret)
             strcpy(reponse,"CONFIRMER#ko#ERREUR_SQL#-1#1");
         else{
@@ -237,8 +240,10 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
                  strcpy(reponse,"CONFIRMER#ko#ERREUR_SQL#-1");
             else{
                 idFact = atoi(tuple[0]);
+                 printf("\nidFact : %d\n",idFact);
                 for(int j = 0 ; j < NBARTICLE && ok == true ; j++)
                 {
+                    printf("tabPanierServeur[%d].id : %d",j,tabPanierServeur[j].id);
                     if(tabPanierServeur[j].id != 0)
                     {
                         int ret = insererArticleAchete(idFact,tabPanierServeur[j].id,tabPanierServeur[j].quantite);

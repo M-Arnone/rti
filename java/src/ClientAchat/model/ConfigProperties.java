@@ -16,7 +16,7 @@ public class ConfigProperties {
         }
     }
     public String getServeurIP() {
-        return p.getProperty("serveur_ip");
+            return p.getProperty("serveur_ip");
     }
     public int getServeurPort() {
         String portStr = p.getProperty("serveur_port");

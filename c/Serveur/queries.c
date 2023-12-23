@@ -188,9 +188,6 @@ int getUserIdByUsername(const char *username) {
 int insererFacture(int idClient,const char *montant, int paye) {
     MYSQL* connexion = ConnexionBD();
 
-    // Échapper les caractères spéciaux dans la date
-    char escaped_date[20];
-    mysql_real_escape_string(connexion, escaped_date, date, strlen(date));
 
     char query[256];
     sprintf(query, "INSERT INTO factures (idClient, date,montant, paye) VALUES (%d, NOW(),'%s', %d)", idClient,montant, paye);
