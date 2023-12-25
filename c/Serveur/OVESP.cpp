@@ -126,6 +126,7 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
                                 {
                                     ok = false;
                                     tabPanierServeur[j].id = id;
+                                    strcpy(tabPanierServeur[j].intitule,articleName);
                                     tabPanierServeur[j].prix = articlePrice;
                                     tabPanierServeur[j].quantite = tabPanierServeur[j].quantite + qtDemande;
                                 }
@@ -170,6 +171,7 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
                         ok = false;
                         tabPanierServeur[j].id = 0;
                         tabPanierServeur[j].prix = 0;
+                        strcpy(tabPanierServeur[j].intitule,"0") ;
                         tabPanierServeur[j].quantite = 0;
                         sprintf(reponse,"CANCEL#ok");
                     }
@@ -209,6 +211,7 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
                         
                         tabPanierServeur[i].id = 0;
                         tabPanierServeur[i].prix = 0;
+                        strcpy(tabPanierServeur[i].intitule,"0") ;
                         tabPanierServeur[i].quantite = 0;
                         sprintf(reponse,"CANCELALL#ok");
                         
@@ -256,6 +259,7 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
                             printf("\nARTICLE ACHETE\n");
                             tabPanierServeur[j].id = 0;
                             tabPanierServeur[j].prix = 0;
+                            strcpy(tabPanierServeur[j].intitule,"0");
                             tabPanierServeur[j].quantite = 0;
                             sprintf(reponse,"CONFIRMER#ok");
                            
@@ -266,6 +270,19 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
             }
         }
 
+
+    }
+
+    if(strcmp(ptr,"CADDIE") == 0){
+        strcpy(reponse, "CADDIE");
+        char CTempon[200];
+        while (tabPanierServeur->id != 0)
+        {
+            strcat(reponse, "#");
+            sprintf(CTempon, "%i#%s#%f#%d", tabPanierServeur->id, tabPanierServeur->intitule, tabPanierServeur->prix, tabPanierServeur->quantite);
+            strcat(reponse, CTempon);
+            tabPanierServeur++;
+        }
 
     }
     return true;

@@ -8,6 +8,7 @@
 typedef struct
 {
   int   id;
+  char intitule[20];
   float prix;
   int   quantite;  
 } ARTICLEPANIER;
