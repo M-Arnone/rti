@@ -21,7 +21,7 @@ pthread_mutex_t mutexClients = PTHREAD_MUTEX_INITIALIZER;
 //***** Parsing de la requete et creation de la reponse *************
 bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeur)
 {
-    
+
     // ***** Récupération nom de la requete *****************
 
     char *ptr = strtok(requete,"#");
@@ -51,11 +51,11 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
         }
         else{
             if(newUser == 1){
-                    sprintf(reponse,"SIGNUP");
-                    SMOP_Signup(user,password);
-                    sprintf(reponse,"LOGIN#ok#%d",getUserIdByUsername(user));
-                    ajoute(socket);
-                    return true;
+                sprintf(reponse,"SIGNUP");
+                SMOP_Signup(user,password);
+                sprintf(reponse,"LOGIN#ok#%d",getUserIdByUsername(user));
+                ajoute(socket);
+                return true;
             }
             else{
                 if (SMOP_Login(user,password) == AUTH_SUCCESS){
@@ -63,15 +63,15 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
                     ajoute(socket);
                 }
                 else if(SMOP_Login(user,password) == AUTH_INCORRECT_PASSWORD)
-                        sprintf(reponse,"LOGIN#ko#pwd");
-                    else 
-                        if(SMOP_Login(user,password) == AUTH_USERNAME_NOT_FOUND){
-                            sprintf(reponse,"LOGIN#ko#username");         
-                        }
+                    sprintf(reponse,"LOGIN#ko#pwd");
+                else
+                if(SMOP_Login(user,password) == AUTH_USERNAME_NOT_FOUND){
+                    sprintf(reponse,"LOGIN#ko#username");
+                }
             }
-            
+
             return true;
-            
+
         }
     }
     // ***** CONSULT ******************************************
@@ -81,8 +81,8 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
         if(!a)
             sprintf(reponse,"CONSULT#ko#-1");
         else sprintf(reponse,"CONSULT#ok#%d#%s#%f#%d#%s",a->id,a->intitule,a->prix,a->stock,a->img);//id,intitule,prix,stock,image
-        free(a->intitule); 
-        free(a); 
+        free(a->intitule);
+        free(a);
     }
     // ***** ACHAT ******************************************
     if (strcmp(ptr,"ACHAT") == 0){
@@ -106,42 +106,42 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
 
             int qtDispo = a->stock;
             if (qtDemande > qtDispo)
-                    strcpy(reponse,"ACHAT#ko#Stock_Insufisant#0");
+                strcpy(reponse,"ACHAT#ko#Stock_Insufisant#0");
             else{
-                    int newQt = qtDispo - qtDemande;
-                    printf("uWu\n");
-                    int ret = updateArticleStock(id,newQt);
-                    printf("NONNOOOON\n");
-                    if(ret == 0)
-                         strcpy(reponse,"ACHAT#ko#ERREUR_SQL#-1");
-                    else{
-                            int j = 0;
-                            bool ok = true;
-                            printf("BANGERWREWRERWW\n");
-                            for (j = 0,ok = true; j < NBARTICLE && ok == true; j++)
-                            {
-                                printf("juuwwwwi : %d\n",j);
-                                // des qu'il y a un emplacement vide ou qu'il croise l'id qu'il a
-                                if(tabPanierServeur[j].id == 0 || tabPanierServeur[j].id == id)
-                                {
-                                    ok = false;
-                                    tabPanierServeur[j].id = id;
-                                    strcpy(tabPanierServeur[j].intitule,articleName);
-                                    tabPanierServeur[j].prix = articlePrice;
-                                    tabPanierServeur[j].quantite = tabPanierServeur[j].quantite + qtDemande;
-                                }
-                            }
-                            printf("AVANT sprintf\n");
-                            strcpy(reponse,"");
-                            printf("reponse : %s\n",reponse);
-                            sprintf(reponse,"ACHAT#ok#%s#%lf#1",articleName,articlePrice);
-                            printf("reponse - apres sprintf -  : %s\n",reponse);
-                            printf("apres sprintf\n");
+                int newQt = qtDispo - qtDemande;
+                printf("uWu\n");
+                int ret = updateArticleStock(id,newQt);
+                printf("NONNOOOON\n");
+                if(ret == 0)
+                    strcpy(reponse,"ACHAT#ko#ERREUR_SQL#-1");
+                else{
+                    int j = 0;
+                    bool ok = true;
+                    printf("BANGERWREWRERWW\n");
+                    for (j = 0,ok = true; j < NBARTICLE && ok == true; j++)
+                    {
+                        printf("juuwwwwi : %d\n",j);
+                        // des qu'il y a un emplacement vide ou qu'il croise l'id qu'il a
+                        if(tabPanierServeur[j].id == 0 || tabPanierServeur[j].id == id)
+                        {
+                            ok = false;
+                            tabPanierServeur[j].id = id;
+                            strcpy(tabPanierServeur[j].intitule,articleName);
+                            tabPanierServeur[j].prix = articlePrice;
+                            tabPanierServeur[j].quantite = tabPanierServeur[j].quantite + qtDemande;
+                        }
                     }
+                    printf("AVANT sprintf\n");
+                    strcpy(reponse,"");
+                    printf("reponse : %s\n",reponse);
+                    sprintf(reponse,"ACHAT#ok#%s#%lf#1",articleName,articlePrice);
+                    printf("reponse - apres sprintf -  : %s\n",reponse);
+                    printf("apres sprintf\n");
+                }
 
             }
-        free(a->intitule); // Libérer le champ intitule
-        free(a);          
+            free(a->intitule); // Libérer le champ intitule
+            free(a);
         }
     }
     // ***** CANCEL ******************************************
@@ -156,12 +156,12 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
             qteDispo = a->stock;
             for(i = 0 , ok = true; ok == true && i < NBARTICLE  ; i++)
             {
-                if(tabPanierServeur[i].id == id) ok = false;   
+                if(tabPanierServeur[i].id == id) ok = false;
             }
             newQte = qteDispo + tabPanierServeur[i-1].quantite;
 
             int rep = updateArticleStock(id,newQte);
-             if(!rep)
+            if(!rep)
                 strcpy(reponse,"CANCEL#ko#ERREUR_SQL#-1");
             else{
                 for(j = 0 , ok = true; j < NBARTICLE && ok == true ; j++)
@@ -176,30 +176,32 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
                         sprintf(reponse,"CANCEL#ok");
                     }
                 }
-                
+
             }
             free(a->intitule); // Libérer le champ intitule
-            free(a);    
+            free(a);
         }
-        
+
     }
     // ***** CANCELALL ******************************************
     if (strcmp(ptr,"CANCELALL") == 0){
         bool ok;
-        int qteDispo,newQte,k,i=0;
+        int qteDispo,newQte,k;
         Article *a;
-        while(tabPanierServeur[i].id != 0){
+        for(int i = 0; i<NBARTICLE; i++){
+            if(tabPanierServeur[i].id==0)
+                continue;
 
             int id = tabPanierServeur[i].id;
             a = getArticleById(id);
             if(!a)
-            sprintf(reponse,"CANCELALL#ko#ERREUR_SQL#-1");
+                sprintf(reponse,"CANCELALL#ko#ERREUR_SQL#-1");
             else{
 
                 qteDispo = a->stock;
                 for(k = 0 , ok = true; ok == true && k < NBARTICLE  ; k++)
                 {
-                    if(tabPanierServeur[k].id == id) ok = false;   
+                    if(tabPanierServeur[k].id == id) ok = false;
                 }
                 newQte = qteDispo + tabPanierServeur[k-1].quantite;
 
@@ -207,28 +209,28 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
                 if(!rep)
                     strcpy(reponse,"CANCELALL#ko#ERREUR_SQL#-1");
                 else{
-                  
-                        
-                        tabPanierServeur[i].id = 0;
-                        tabPanierServeur[i].prix = 0;
-                        strcpy(tabPanierServeur[i].intitule,"0") ;
-                        tabPanierServeur[i].quantite = 0;
-                        sprintf(reponse,"CANCELALL#ok");
-                        
-                    }
+
+
+                    tabPanierServeur[i].id = 0;
+                    tabPanierServeur[i].prix = 0;
+                    strcpy(tabPanierServeur[i].intitule,"0") ;
+                    tabPanierServeur[i].quantite = 0;
+                    sprintf(reponse,"CANCELALL#ok");
+
+                }
                 free(a->intitule); // Libérer le champ intitule
-                free(a); 
-                
+                free(a);
+
             }
-             i++;
-            }
-        
+            i++;
+        }
+
 
     }
     // ***** CONFIRMER ******************************************
     if(strcmp(ptr,"CONFIRMER") == 0){
         printf("ptr : %s\n\n",ptr);
-        int idClient =  atoi(strtok(NULL,"#")); 
+        int idClient =  atoi(strtok(NULL,"#"));
         char *montant = strtok(NULL, "#");
         bool paye = false;
         bool ok = true;
@@ -240,10 +242,10 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
         else{
             tuple = getFactureByMaxId();
             if(!tuple)
-                 strcpy(reponse,"CONFIRMER#ko#ERREUR_SQL#-1");
+                strcpy(reponse,"CONFIRMER#ko#ERREUR_SQL#-1");
             else{
                 idFact = atoi(tuple[0]);
-                 printf("\nidFact : %d\n",idFact);
+                printf("\nidFact : %d\n",idFact);
                 for(int j = 0 ; j < NBARTICLE && ok == true ; j++)
                 {
                     printf("tabPanierServeur[%d].id : %d",j,tabPanierServeur[j].id);
@@ -262,11 +264,11 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
                             strcpy(tabPanierServeur[j].intitule,"0");
                             tabPanierServeur[j].quantite = 0;
                             sprintf(reponse,"CONFIRMER#ok");
-                           
+
                         }
                     }
                 }
-                    
+
             }
         }
 
@@ -276,12 +278,13 @@ bool SMOP(char* requete, char* reponse,int socket,ARTICLEPANIER *tabPanierServeu
     if(strcmp(ptr,"CADDIE") == 0){
         strcpy(reponse, "CADDIE");
         char CTempon[200];
-        while (tabPanierServeur->id != 0)
-        {
-            strcat(reponse, "#");
-            sprintf(CTempon, "%i#%s#%f#%d", tabPanierServeur->id, tabPanierServeur->intitule, tabPanierServeur->prix, tabPanierServeur->quantite);
-            strcat(reponse, CTempon);
-            tabPanierServeur++;
+
+        for(int i = 0; i<NBARTICLE; i++){
+            if(tabPanierServeur[i].id != 0){
+                strcat(reponse, "#");
+                sprintf(CTempon, "%i#%s#%f#%d", tabPanierServeur[i].id, tabPanierServeur[i].intitule, tabPanierServeur[i].prix, tabPanierServeur[i].quantite);
+                strcat(reponse, CTempon);
+            }
         }
 
     }
@@ -317,8 +320,8 @@ int estPresent(int socket)
     int indice = -1;
     pthread_mutex_lock(&mutexClients);
     for(int i=0 ; i<nbClients ; i++)
-        if (clients[i] == socket){ 
-            indice = i; break; 
+        if (clients[i] == socket){
+            indice = i; break;
         }
     pthread_mutex_unlock(&mutexClients);
     return indice;
