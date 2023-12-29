@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="Serveur.ServeurGenerique.ServeurVESPAP">
+  <grid id="27dc6" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+    <constraints>
+      <xy x="20" y="20" width="500" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <component id="c101b" class="javax.swing.JLabel">
+        <constraints/>
+        <properties>
+          <text value="ServeurVESPAP"/>
+        </properties>
+      </component>
+      <component id="dcc5" class="javax.swing.JButton" binding="demarrerServeur">
+        <constraints/>
+        <properties>
+          <text value="Démarrer le serveur"/>
+        </properties>
+      </component>
+      <component id="b9e93" class="javax.swing.JCheckBox" binding="securiseCheckBox">
+        <constraints/>
+        <properties>
+          <text value="Sécurisé"/>
+        </properties>
+      </component>
+    </children>
+  </grid>
+</form>

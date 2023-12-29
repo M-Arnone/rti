@@ -2,9 +2,13 @@ package Serveur.ServeurGenerique;
 
 import Serveur.Logger;
 
+import javax.net.ssl.*;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.security.*;
+import java.security.cert.CertificateException;
 
 public class ThreadServeurPool extends ThreadServeur
 {
@@ -13,9 +17,8 @@ public class ThreadServeurPool extends ThreadServeur
     private ThreadGroup pool;
     private int taillePool;
 
-    public ThreadServeurPool(int p, Protocole protocole, int taillePool, Logger logger) throws IOException
-    {
-        super(p, protocole, logger);
+    public ThreadServeurPool(int p, Protocole protocole, int taillePool,boolean iss, Logger logger) throws IOException, KeyStoreException {
+        super(p, protocole, logger,iss);
         connexionsEnAttente = new FileAttente();
         pool = new ThreadGroup("POOL");
         this.taillePool = taillePool;
@@ -38,21 +41,40 @@ public class ThreadServeurPool extends ThreadServeur
         //Attente des connexions
         while(!this.isInterrupted())
         {
-            Socket csocket;
-            try
+            if(!isSecure)
             {
-                csocket = sSocket.accept();
-                logger.Trace("ThreadServeurPool - Connexion acceptée, mise en file d'attente.");
-                connexionsEnAttente.addConnexion(csocket);
+                //Version non-sécurisé
+                Socket csocket;
+                try
+                {
+                    csocket = sSocket.accept();
+                    logger.Trace("ThreadServeurPool - Connexion acceptée (non-sécurisée), mise en file d'attente.");
+                    connexionsEnAttente.addConnexion(csocket);
+                }
+                catch (SocketTimeoutException ex)
+                {
+                    logger.Trace("ThreadServeurPool - Thread interrompu");
+                }
+                catch (IOException ex)
+                {
+                    logger.Trace("Erreur I/O");
+                }
             }
-            catch (SocketTimeoutException ex)
-            {
-                logger.Trace("ThreadServeurPool - Thread interrompu");
+            else{
+                //Version sécurisée
+                SSLSocket sslSocket = null;
+                try {
+                    sslSocket = (SSLSocket)SslSSocket.accept();
+                    logger.Trace("ThreadServeurPool - Connexion acceptée (sécurisée), mise en file d'attente.");
+                    connexionsEnAttente.addConnexion(sslSocket);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-            catch (IOException ex)
-            {
-                logger.Trace("Erreur I/O");
-            }
+
+
+
+
 
         }
         logger.Trace("ThreadServeurPool - TH Serveur (Pool) interrompu.");
