@@ -4,6 +4,7 @@ import BD.classes.Facture;
 import ClientPayement.model.Model;
 import ClientPayement.view.ClientPayementGUI;
 import ClientPayement.view.VisaGUI;
+import ClientPayement.view.choixSecure;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -15,13 +16,38 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class Controler extends WindowAdapter implements ActionListener {
-    private ClientPayementGUI cpg;
-    private VisaGUI vg= new VisaGUI();;
-    public Controler(VisaGUI c){vg = c;}
-    public Controler(ClientPayementGUI c){cpg = c;}
+    private ClientPayementGUI cpg = new ClientPayementGUI();
+    private VisaGUI vg= new VisaGUI();
+    private choixSecure cs = new choixSecure();
+    public Controler(VisaGUI c) throws SQLException, IOException, ClassNotFoundException {vg = c;}
+    public Controler(ClientPayementGUI c) throws SQLException, IOException, ClassNotFoundException {cpg = c;}
+    public Controler(choixSecure css) throws SQLException, IOException, ClassNotFoundException {cs = css;}
+
+    private Model m;
+
+    private boolean isSecure;
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        Controler c;
+        if(e.getSource() == cs.getValiderButton())
+        {
+            cs.setVisible(false);
+            isSecure = cs.getSecuriseCheckBox().isSelected();
+            System.out.println("isSecure" + isSecure);
+            try {
+                m = new Model(isSecure);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            try {
+                c = new Controler(cpg);
+            } catch (SQLException | IOException | ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
+            cpg.setControler(c);
+            cpg.setVisible(true);
+        }
         if(e.getSource() == cpg.getBtnConnexion()){
             try {
                 on_pushBtnLogin();
@@ -71,7 +97,7 @@ public class Controler extends WindowAdapter implements ActionListener {
         if(login.isEmpty() || pwd.isEmpty())
             JOptionPane.showMessageDialog(null, "Les champs de texte doivent être remplis.", "Erreur", JOptionPane.ERROR_MESSAGE);
         else{
-            Model m = Model.getInstance();
+            Model m = Model.getInstance(isSecure);
             if(m.login(login,pwd)){
                 cpg.getBtnConnexion().setEnabled(false);
                 cpg.getBtnDeconnexion().setEnabled(true);
@@ -85,7 +111,7 @@ public class Controler extends WindowAdapter implements ActionListener {
         }
     }
     private void on_pushBtnLogout() throws SQLException, IOException, ClassNotFoundException {
-        Model m = Model.getInstance();
+        m = Model.getInstance(isSecure);
         if(!m.getUser().isConnected())
             JOptionPane.showMessageDialog(null, "Utilisateur non-connecté", "Erreur", JOptionPane.ERROR_MESSAGE);
         else
@@ -100,7 +126,7 @@ public class Controler extends WindowAdapter implements ActionListener {
         }
     }
     private void onPush_BtnVoirFactures() throws Exception {
-        Model m = Model.getInstance();
+        Model m = Model.getInstance(isSecure);
         int id = Integer.parseInt(cpg.getTextFieldClient().getText());
         ArrayList<Facture> listeFacture = m.GetFactures(id);
         cpg.updateFactures(listeFacture);
@@ -111,7 +137,7 @@ public class Controler extends WindowAdapter implements ActionListener {
         String nom = vg.getTextFieldTitulaire().getText();
         Model m = null;
         try {
-            m = Model.getInstance();
+            m = Model.getInstance(isSecure);
         } catch (SQLException | ClassNotFoundException | IOException ex) {
             throw new RuntimeException(ex);
         }

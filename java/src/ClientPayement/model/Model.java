@@ -11,8 +11,11 @@ import BD.logout.RequeteLOGOUT;
 import ClientPayement.model.ConfigProperties;
 import BD.interfaces.*;
 
+import javax.net.ssl.*;
 import java.io.*;
 import java.net.Socket;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -22,6 +25,8 @@ public class Model {
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
     private Socket sClient;
+
+    private SSLSocket sslSocket;
     private User user;
 
     public ArrayList<Facture> getListeFacture() {
@@ -34,11 +39,52 @@ public class Model {
         return user;
     }
 
-    public void connectToServer() throws IOException {
+    public void connectToServer(boolean isSecure) throws IOException {
         ConfigProperties cg = new ConfigProperties();
-        sClient = new Socket(cg.getServeurIP(),cg.getServeurPort());
-        oos = new ObjectOutputStream(sClient.getOutputStream());
-        ois = new ObjectInputStream(sClient.getInputStream());
+        if(!isSecure)
+        {
+            //Version non-sécurisée
+            sClient = new Socket(cg.getServeurIP(),cg.getServeurPort());
+            oos = new ObjectOutputStream(sClient.getOutputStream());
+            ois = new ObjectInputStream(sClient.getInputStream());
+        }
+        else{
+            //Version sécurisée
+            try
+            {
+                // 1. Keystore
+                KeyStore clientKs = KeyStore.getInstance("JKS");
+                String keystorePath = "/Users/matteo/Desktop/demoCA/client_keystore.jks";
+                char[] keystorePassword = "matteocli".toCharArray();
+                try (FileInputStream fis = new FileInputStream(keystorePath)) {
+                    clientKs.load(fis, keystorePassword);
+                }
+
+                // 2. Contexte
+                SSLContext sslContext = SSLContext.getInstance("TLS");
+                KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+                char[] PASSWD_KEY = "matteocli".toCharArray();
+                kmf.init(clientKs, PASSWD_KEY);
+                TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+                tmf.init(clientKs);
+                sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+
+                // 3. Factory
+                SSLSocketFactory SslSFac= sslContext.getSocketFactory();
+                // 4. Socket
+                System.out.println("Portic" + cg.getServeurPortSecurise());
+                sslSocket = (SSLSocket) SslSFac.createSocket(cg.getServeurIP(), cg.getServeurPortSecurise());
+
+                oos = new ObjectOutputStream(sslSocket.getOutputStream());
+                ois = new ObjectInputStream(sslSocket.getInputStream());
+            } catch (UnrecoverableKeyException | CertificateException | KeyStoreException | NoSuchAlgorithmException |
+                     KeyManagementException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+
+
     }
 
     public boolean login(String username,String password) throws IOException, ClassNotFoundException {
@@ -68,7 +114,7 @@ public class Model {
         RequeteGETFACTURES requete = new RequeteGETFACTURES(idClient);
         Reponse reponse = traiteRequete(requete);
         if (reponse instanceof ReponseGETFACTURES) {
-            if (((ReponseGETFACTURES) reponse).getListeFactures().size() > 0) {
+            if (!((ReponseGETFACTURES) reponse).getListeFactures().isEmpty()) {
                 return listeFacture = ((ReponseGETFACTURES) reponse).getListeFactures();
             }
             else throw new Exception("Aucune facture n'a été trouvé pour ce numéro de client!");
@@ -98,14 +144,14 @@ public class Model {
         return (Reponse) ois.readObject();
     }
 
-    public Model() throws IOException {
-        connectToServer();
+    public Model(boolean isS) throws IOException {
+        connectToServer(isS);
     }
-    public static Model getInstance() throws SQLException, ClassNotFoundException, IOException {
+    public static Model getInstance(boolean b) throws SQLException, ClassNotFoundException, IOException {
         if(instance == null){
-            synchronized (ClientAchat.model.Model.class){
+            synchronized (Model.class){
                 if(instance == null){
-                    instance = new Model();
+                    instance = new Model(b);
                 }
             }
         }

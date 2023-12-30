@@ -29,6 +29,16 @@ public class ConfigProperties {
             return -1;
         }
     }
+    public int getServeurPortSecurise(){
+        String portStr = p.getProperty("serveurachat_port_securise");
+        try {
+            return Integer.parseInt(portStr);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
     public static void main(String[] args) {
         ConfigProperties config = new ConfigProperties();
         String serveurIP = config.getServeurIP();
@@ -37,6 +47,7 @@ public class ConfigProperties {
         if (serveurIP != null && portIP > 0) {
             System.out.println("Serveur IP : " + serveurIP);
             System.out.println("Port IP : " + portIP);
+            System.out.println("Port Sécurisé IP : " + config.getServeurPortSecurise());
         } else {
             System.out.println("Impossible de lire les propriétés de configuration.");
         }

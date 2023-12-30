@@ -29,14 +29,14 @@ public abstract class ThreadServeur  extends Thread{
             try{
                 // 1. Keystore
                 KeyStore ServerKs = KeyStore.getInstance("JKS");
-                String FICHIER_KEYSTORE = "/Users/matteo/Desktop/mykeystore.jks";
-                char[] PASSWD_KEYSTORE = "beaugosseser".toCharArray();
+                String FICHIER_KEYSTORE = "/Users/matteo/Desktop/demoCA/server_keystore.jks";
+                char[] PASSWD_KEYSTORE = "matteoser".toCharArray();
                 FileInputStream ServerFK = new FileInputStream(FICHIER_KEYSTORE);
                 ServerKs.load(ServerFK, PASSWD_KEYSTORE);
                 // 2. Contexte
                 SSLContext SslC = SSLContext.getInstance("TLS");
                 KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-                char[] PASSWD_KEY = "beaugosseser".toCharArray();
+                char[] PASSWD_KEY = "matteoser".toCharArray();
                 kmf.init(ServerKs, PASSWD_KEY);
                 TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
                 tmf.init(ServerKs);
@@ -44,6 +44,7 @@ public abstract class ThreadServeur  extends Thread{
                 // 3. Factory
                 SSLServerSocketFactory SslSFac= SslC.getServerSocketFactory();
                 // 4. Socket
+                System.out.println("Porttt" + port);
                 SslSSocket = (SSLServerSocket) SslSFac.createServerSocket(port);
             }
             catch (UnrecoverableKeyException | CertificateException | NoSuchAlgorithmException |
