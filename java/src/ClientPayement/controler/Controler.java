@@ -23,7 +23,7 @@ public class Controler extends WindowAdapter implements ActionListener {
     public Controler(ClientPayementGUI c) throws SQLException, IOException, ClassNotFoundException {cpg = c;}
     public Controler(choixSecure css) throws SQLException, IOException, ClassNotFoundException {cs = css;}
 
-    private Model m;
+    private static Model m;
 
     private boolean isSecure;
 
@@ -36,8 +36,12 @@ public class Controler extends WindowAdapter implements ActionListener {
             isSecure = cs.getSecuriseCheckBox().isSelected();
             System.out.println("isSecure" + isSecure);
             try {
-                m = new Model(isSecure);
+                m = Model.getInstance(isSecure);
             } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            } catch (ClassNotFoundException ex) {
                 throw new RuntimeException(ex);
             }
             try {
@@ -97,7 +101,7 @@ public class Controler extends WindowAdapter implements ActionListener {
         if(login.isEmpty() || pwd.isEmpty())
             JOptionPane.showMessageDialog(null, "Les champs de texte doivent être remplis.", "Erreur", JOptionPane.ERROR_MESSAGE);
         else{
-            Model m = Model.getInstance(isSecure);
+            m = Model.getInstance(isSecure);
             if(m.login(login,pwd)){
                 cpg.getBtnConnexion().setEnabled(false);
                 cpg.getBtnDeconnexion().setEnabled(true);
@@ -126,7 +130,7 @@ public class Controler extends WindowAdapter implements ActionListener {
         }
     }
     private void onPush_BtnVoirFactures() throws Exception {
-        Model m = Model.getInstance(isSecure);
+        m = Model.getInstance(isSecure);
         int id = Integer.parseInt(cpg.getTextFieldClient().getText());
         ArrayList<Facture> listeFacture = m.GetFactures(id);
         cpg.updateFactures(listeFacture);
@@ -135,7 +139,6 @@ public class Controler extends WindowAdapter implements ActionListener {
     private void onPush_ConfirmerVisa() throws Exception {
         String visa = vg.getTextFieldVisa().getText();
         String nom = vg.getTextFieldTitulaire().getText();
-        Model m = null;
         try {
             m = Model.getInstance(isSecure);
         } catch (SQLException | ClassNotFoundException | IOException ex) {

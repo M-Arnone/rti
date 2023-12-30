@@ -144,7 +144,7 @@ public class Model {
         return (Reponse) ois.readObject();
     }
 
-    public Model(boolean isS) throws IOException {
+    private Model(boolean isS) throws IOException {
         connectToServer(isS);
     }
     public static Model getInstance(boolean b) throws SQLException, ClassNotFoundException, IOException {
