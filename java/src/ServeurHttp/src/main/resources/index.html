@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Titreeee</title>
+    <!--<link href="style/style.css" rel="stylesheet" type="text/css">-->
+    <script src="./js/code.js"></script>
+</head>
+<body>
+<div id="contenu">
+    <div id="tableau">
+        <table border="1" id="tab">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Article</th>
+                <th>Prix Unitaire</th>
+                <th>Quantité</th>
+            </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <div id="formulaire">
+        <p>Article sélectionné :</p>
+        <form id="updateForm">
+            <label for="id">ID :</label>
+            <input type="text" id="id" name="id" readonly required><br>
+
+            <label for="article">Article :</label>
+            <input type="text" id="article" name="article" readonly required><br>
+
+            <label for="prixUnitaire">Prix Unitaire :</label>
+            <input type="number" id="prixUnitaire" name="prixUnitaire" required><br>
+
+            <label for="quantite">Quantité :</label>
+            <input type="number" id="quantite" name="quantite" required><br>
+
+            <button type="button" id="updateButton">Mettre à jour</button>
+        </form>
+    </div>
+
+    <img id="imageaff" src="" alt="cliquer pour voir l'article séléectionner">
+
+</div>
+
+</body>
+</html>
