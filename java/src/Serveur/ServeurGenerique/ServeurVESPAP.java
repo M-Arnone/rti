@@ -2,6 +2,7 @@ package Serveur.ServeurGenerique;
 
 import Serveur.Logger;
 import Serveur.ProtocoleVESPAP.VESPAP;
+import Serveur.ProtocoleVESPAP.VESPAPS;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +13,7 @@ public class ServeurVESPAP extends JFrame implements Logger {
     ThreadServeur threadServeur;
     private JButton demarrerServeur;
     private JCheckBox securiseCheckBox;
+    private JCheckBox demande;
 
     public ServeurVESPAP()
     {
@@ -25,11 +27,12 @@ public class ServeurVESPAP extends JFrame implements Logger {
     private void initializeComponents() {
         demarrerServeur = new JButton("Démarrer Serveur");
         securiseCheckBox = new JCheckBox("Sécurisé");
+        demande = new JCheckBox("À la demande");
 
-        demarrerServeur.addActionListener(e -> startServeur(securiseCheckBox.isSelected()));
+        demarrerServeur.addActionListener(e -> startServeur(securiseCheckBox.isSelected(),demande.isSelected()));
         securiseCheckBox.addActionListener(e -> {
             if (threadServeur != null && !threadServeur.isAlive()) {
-                startServeur(securiseCheckBox.isSelected());
+                startServeur(securiseCheckBox.isSelected(),demande.isSelected());
             }
         });
     }
@@ -37,16 +40,22 @@ public class ServeurVESPAP extends JFrame implements Logger {
         setLayout(new FlowLayout());// ou un autre LayoutManager
         add(demarrerServeur);
         add(securiseCheckBox);
+        add(demande);
     }
-    private void startServeur(boolean estSecurise) {
+    private void startServeur(boolean estSecurise,boolean demande) {
         int portNonSecurise = 5678;
         int portSecurise = 9123;
         try
         {
-            Protocole protocole = new VESPAP(this);
-
-            int taillePool = 10;
-            threadServeur = new ThreadServeurPool(estSecurise?portSecurise:portNonSecurise,protocole,taillePool,estSecurise,this);
+            Protocole protocole = ProtocoleFactory.getProtocole(demande,null);
+            if(demande){
+                System.out.println("protocole.getNom : " + protocole.getNom());
+                threadServeur = new ThreadServeurDemande(portSecurise, protocole, this);
+            }
+            else {
+                int taillePool = 10;
+                threadServeur = new ThreadServeurPool(estSecurise ? portSecurise : portNonSecurise, protocole, taillePool, estSecurise, this);
+            }
             threadServeur.start();
         }
         catch(NumberFormatException | IOException | KeyStoreException ex)

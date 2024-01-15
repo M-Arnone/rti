@@ -38,6 +38,19 @@ public class Model {
     public User getUser() {
         return user;
     }
+    private Model(boolean isS) throws IOException {
+        connectToServer(isS);
+    }
+    public static Model getInstance(boolean b) throws SQLException, ClassNotFoundException, IOException {
+        if(instance == null){
+            synchronized (Model.class){
+                if(instance == null){
+                    instance = new Model(b);
+                }
+            }
+        }
+        return instance;
+    }
 
     public void connectToServer(boolean isSecure) throws IOException {
         ConfigProperties cg = new ConfigProperties();
@@ -144,19 +157,7 @@ public class Model {
         return (Reponse) ois.readObject();
     }
 
-    private Model(boolean isS) throws IOException {
-        connectToServer(isS);
-    }
-    public static Model getInstance(boolean b) throws SQLException, ClassNotFoundException, IOException {
-        if(instance == null){
-            synchronized (Model.class){
-                if(instance == null){
-                    instance = new Model(b);
-                }
-            }
-        }
-        return instance;
-    }
+
 
     public static void main(String[] args) {
 

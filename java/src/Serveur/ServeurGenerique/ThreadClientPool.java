@@ -1,15 +1,16 @@
 package Serveur.ServeurGenerique;
 
 import Serveur.Logger;
+import Serveur.ProtocoleVESPAP.VESPAP;
 
 import java.io.IOException;
 
 public class ThreadClientPool extends ThreadClient
 {
     private FileAttente connexionsEnAttente;
-    public ThreadClientPool(Protocole p, FileAttente file, ThreadGroup tg, Logger l) throws IOException
+    public ThreadClientPool(VESPAP v, FileAttente file, ThreadGroup tg, Logger l) throws IOException
     {
-        super(p,tg,l);
+        super(v,tg,l);
         connexionsEnAttente = file;
     }
     @Override

@@ -1,6 +1,8 @@
 package Serveur.ServeurGenerique;
 
 import Serveur.Logger;
+import Serveur.ProtocoleVESPAP.VESPAP;
+import Serveur.ProtocoleVESPAP.VESPAPS;
 
 import javax.net.ssl.*;
 import java.io.FileInputStream;
@@ -12,12 +14,13 @@ import java.security.cert.CertificateException;
 public abstract class ThreadServeur  extends Thread{
     protected int port;
     protected Protocole protocole;
+
     protected Logger logger;
     protected boolean isSecure;
     protected ServerSocket sSocket;
     protected SSLServerSocket SslSSocket;
 
-    public ThreadServeur(int port, Protocole protocole, Logger logger,boolean isS) throws IOException, IOException, KeyStoreException {
+    public ThreadServeur(int port,Protocole protocole, Logger logger,boolean isS) throws IOException, IOException, KeyStoreException {
         super("TH Serveur (port=" + port + ",protocole=" + protocole.getNom() + ")");
         this.port = port;
         this.protocole = protocole;
@@ -54,4 +57,5 @@ public abstract class ThreadServeur  extends Thread{
         }
 
     }
+
 }

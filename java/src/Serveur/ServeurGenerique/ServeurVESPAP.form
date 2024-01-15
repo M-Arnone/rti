@@ -25,6 +25,12 @@
           <text value="Sécurisé"/>
         </properties>
       </component>
+      <component id="1cbba" class="javax.swing.JCheckBox" binding="demande">
+        <constraints/>
+        <properties>
+          <text value="À la demande"/>
+        </properties>
+      </component>
     </children>
   </grid>
 </form>

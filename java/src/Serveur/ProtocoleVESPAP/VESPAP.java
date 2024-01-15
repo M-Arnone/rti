@@ -14,7 +14,14 @@ import Serveur.*;
 import Serveur.ServeurGenerique.FinConnexionException;
 import Serveur.ServeurGenerique.Protocole;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import java.io.IOException;
 import java.net.Socket;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,8 +43,8 @@ public class VESPAP implements Protocole {
     {
         return "VESPAP";
     }
-    @Override
-    public synchronized Reponse TraiteRequete(Requete requete, Socket socket) throws FinConnexionException, SQLException {
+
+    public synchronized Reponse TraiteRequete(Requete requete, Socket socket) throws SQLException, FinConnexionException {
         if (requete instanceof RequeteLOGIN)
             return TraiteRequeteLOGIN((RequeteLOGIN) requete, socket);
         if (requete instanceof RequeteLOGOUT)
@@ -48,6 +55,12 @@ public class VESPAP implements Protocole {
             return TraiteRequetePAYFACTURES((RequetePAYFACTURES) requete);
         return null;
     }
+
+    @Override
+    public Reponse TraiteRequeteSecure(Requete requete, Socket socket, SecretKey ClientCle) throws FinConnexionException, SQLException, UnrecoverableKeyException, CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, NoSuchProviderException, InvalidKeyException {
+        return null;
+    }
+
     private synchronized ReponseLOGIN TraiteRequeteLOGIN(RequeteLOGIN requete, Socket socket) throws FinConnexionException
     {
         logger.Trace("VESPAP - RequeteLOGIN reçue de " + requete.getLogin());

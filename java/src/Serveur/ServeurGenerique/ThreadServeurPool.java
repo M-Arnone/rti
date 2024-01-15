@@ -1,6 +1,7 @@
 package Serveur.ServeurGenerique;
 
 import Serveur.Logger;
+import Serveur.ProtocoleVESPAP.VESPAP;
 
 import javax.net.ssl.*;
 import java.io.FileInputStream;
@@ -17,8 +18,8 @@ public class ThreadServeurPool extends ThreadServeur
     private ThreadGroup pool;
     private int taillePool;
 
-    public ThreadServeurPool(int p, Protocole protocole, int taillePool,boolean iss, Logger logger) throws IOException, KeyStoreException {
-        super(p, protocole, logger,iss);
+    public ThreadServeurPool(int p, Protocole v, int taillePool, boolean iss, Logger logger) throws IOException, KeyStoreException {
+        super(p, v, logger,iss);
         connexionsEnAttente = new FileAttente();
         pool = new ThreadGroup("POOL");
         this.taillePool = taillePool;
@@ -31,7 +32,7 @@ public class ThreadServeurPool extends ThreadServeur
         try
         {
             for(int i=0;i<taillePool;i++)
-                new ThreadClientPool(protocole,connexionsEnAttente,pool,logger).start();
+                new ThreadClientPool(new VESPAP(logger),connexionsEnAttente,pool,logger).start();
         }
         catch (IOException ex)
         {

@@ -12,6 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -57,6 +59,10 @@ public class Controler extends WindowAdapter implements ActionListener {
                 on_pushBtnLogin();
             } catch (SQLException | IOException | ClassNotFoundException ex) {
                 throw new RuntimeException(ex);
+            } catch (NoSuchAlgorithmException ex) {
+                throw new RuntimeException(ex);
+            } catch (NoSuchProviderException ex) {
+                throw new RuntimeException(ex);
             }
         }
         if(e.getSource() == cpg.getBtnDeconnexion())
@@ -95,7 +101,7 @@ public class Controler extends WindowAdapter implements ActionListener {
         }
     }
 
-    private void on_pushBtnLogin() throws SQLException, IOException, ClassNotFoundException {
+    private void on_pushBtnLogin() throws SQLException, IOException, ClassNotFoundException, NoSuchAlgorithmException, NoSuchProviderException {
         String login = cpg.getTextFieldLogin().getText();
         String pwd = cpg.getTextFieldPassword().getText();
         if(login.isEmpty() || pwd.isEmpty())
